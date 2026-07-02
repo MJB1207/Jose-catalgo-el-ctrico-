@@ -1,323 +1,885 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ecos de Moda — Tienda de Regalos</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            blush: '#FFFAFC', charcoal: '#1A1A1A', bark: '#1A1A1A',
-            fuchsia: '#E91E8C', deepFuchsia: '#C2185B', sand: '#F3E5F5',
-            drift: '#6B7280', admin: '#111827', adminCard: '#1F2937'
-          },
-          fontFamily: { display: ['Playfair Display', 'serif'], body: ['Lato', 'sans-serif'] }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexo Solar — Energía Solar para tu Hogar y Empresa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        orange: { 450: '#FF5A1F', 500: '#F74E09', 600: '#D93D00' },
+                        neutral: { 850: '#1a1a1a', 900: '#0a0a0a', 950: '#050505' }
+                    },
+                    animation: { 'spin-slow': 'spin-slow 12s linear infinite' }
+                }
+            }
         }
-      }
-    }
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root { --bg: #FFFAFC; --fg: #1A1A1A; --accent: #E91E8C; --accent2: #C2185B; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; max-width: 100vw; }
-    .font-display { font-family: 'Playfair Display', serif; }
-    .float-shape { position: absolute; border-radius: 50%; pointer-events: none; animation: floatUp 8s ease-in-out infinite; background: rgba(255,255,255,0.15); backdrop-filter: blur(6px); box-shadow: 0 8px 32px rgba(233, 30, 140, 0.25), inset 0 0 20px rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.4); overflow: hidden; }
-    .float-shape img { width: 100%; height: 100%; object-fit: contain; background: white; box-shadow: 0 4px 15px rgba(233, 30, 140, 0.2); }
-    .float-shape:nth-child(1) { animation-delay: 0s; animation-duration: 8s; }
-    .float-shape:nth-child(2) { animation-delay: -2s; animation-duration: 10s; }
-    .float-shape:nth-child(3) { animation-delay: -4s; animation-duration: 12s; }
-    .float-shape:nth-child(4) { animation-delay: -1s; animation-duration: 9s; }
-    @keyframes floatUp { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
-    .product-card { transition: transform 0.2s; border-radius: 16px; overflow: hidden; background: #fff; }
-    .product-card:active { transform: scale(0.97); }
-    .tab-btn { transition: all 0.3s; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; padding: 10px 16px; font-size: 14px; }
-    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
-    .modal-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    .modal-overlay.visible { opacity: 1; pointer-events: all; }
-    .modal-box { transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); width: 100%; max-height: 95vh; overflow-y: auto; border-radius: 24px 24px 0 0; }
-    .modal-overlay.visible .modal-box { transform: translateY(0); }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,250,252,0.97); backdrop-filter: blur(12px); border-top: 1px solid #f3e5f5; z-index: 900; padding-bottom: env(safe-area-inset-bottom, 0px); display: flex; }
-    .bottom-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #6B7280; transition: color 0.2s; padding: 10px 0; background: none; border: none; cursor: pointer; flex: 1; }
-    .bottom-nav button.active { color: #E91E8C; font-weight: 700; }
-    .bottom-nav button i { font-size: 20px; }
-    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-120%); background: #1A1A1A; color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 14px; z-index: 2000; transition: transform 0.4s; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    .badge-cart { position: absolute; top: -5px; right: -5px; background: var(--accent); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-    .tabs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .tabs-scroll::-webkit-scrollbar { display: none; }
-    .admin-scroll::-webkit-scrollbar { width: 4px; } .admin-scroll::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 2px; }
-    .admin-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #374151; font-size: 15px; font-family: 'Lato', sans-serif; background: #1F2937; color: #f9fafb; }
-    .admin-input:focus { outline: none; border-color: #E91E8C; }
-    #lightbox { position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; cursor: zoom-out; }
-    #lightbox.active { display: flex; }
-    #lightbox img { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px; }
-  </style>
+    </script>
+    <style>
+        *{font-family:'Inter',sans-serif}
+        html{scroll-behavior:smooth}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-20px) rotate(1deg)}}
+        @keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(247,78,9,0.2)}50%{box-shadow:0 0 40px rgba(247,78,9,0.4)}}
+        .animate-fade-in-up{animation:fadeInUp .8s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
+        .animate-float{animation:float 6s ease-in-out infinite}
+        .animate-pulse-glow{animation:pulse-glow 3s ease-in-out infinite}
+        .delay-100{animation-delay:100ms}.delay-200{animation-delay:200ms}.delay-300{animation-delay:300ms}.delay-400{animation-delay:400ms}.delay-500{animation-delay:500ms}
+        .reveal{opacity:0;transform:translateY(30px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+        .reveal.active{opacity:1;transform:translateY(0)}
+        .gradient-text{background:linear-gradient(to right,#fff,#a3a3a3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .card-hover{transition:all .4s cubic-bezier(.175,.885,.32,1.275)}
+        .card-hover:hover{transform:translateY(-8px) scale(1.02)}
+        .hero-gradient{background:radial-gradient(ellipse at 70% 50%,rgba(247,78,9,.15) 0%,transparent 60%),radial-gradient(ellipse at 30% 80%,rgba(247,78,9,.08) 0%,transparent 50%)}
+        .glass-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
+        .solar-grid{background-image:linear-gradient(rgba(247,78,9,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(247,78,9,.05) 1px,transparent 1px);background-size:60px 60px}
+        .text-shadow-hero{text-shadow:0 4px 40px rgba(0,0,0,.5)}
+        .btn-primary{transition:all .15s ease}
+        .btn-primary:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(247,78,9,.4)}
+        .btn-secondary{transition:all .15s ease}
+        .btn-secondary:hover{transform:scale(1.05);background:rgba(255,255,255,.1)}
+        .nav-blur{background:rgba(10,10,10,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+        .toast{transform:translateX(120%);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+        .toast.show{transform:translateX(0)}
+        .mobile-menu{transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+        .mobile-menu.open{transform:translateX(0)}
+        .faq-content{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
+        .faq-content.open{max-height:300px}
+        @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        .marquee-track{animation:marquee 30s linear infinite}
+        input[type="range"]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:rgba(255,255,255,.1);outline:none}
+        input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:#F74E09;cursor:pointer;box-shadow:0 0 10px rgba(247,78,9,.5)}
+        input[type="range"]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#F74E09;cursor:pointer;border:none}
+        .skeleton{background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.05) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:1rem}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    </style>
 </head>
-<body>
+<body class="bg-neutral-900 text-white antialiased overflow-x-hidden">
 
-  <nav class="bottom-nav">
-    <button class="active" onclick="switchScreen('catalog')" id="navCatalog"><i class="fas fa-store"></i><span>Catálogo</span></button>
-    <button onclick="switchScreen('cart')" id="navCart" class="relative"><i class="fas fa-shopping-bag"></i><span id="cartBadge" class="badge-cart hidden" style="top:-2px;right:10px">0</span><span>Carrito</span></button>
-    <button onclick="handleAdminClick()" id="navAdmin"><i class="fas fa-lock"></i><span>Admin</span></button>
-  </nav>
-
-  <main id="screenCatalog" class="pb-24">
-    <section id="heroSection" class="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div class="float-shape w-24 h-24" style="top:12%;left:8%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
-      <div class="float-shape w-20 h-20" style="top:60%;left:12%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
-      <div class="float-shape w-28 h-28" style="top:25%;right:15%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
-      <div class="float-shape w-16 h-16" style="bottom:15%;right:10%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
-      <div class="relative z-10 text-center px-6 max-w-lg">
-        <p id="heroSubtitle" class="text-fuchsia uppercase tracking-[0.3em] text-xs mb-4 font-bold">Tienda de Regalos</p>
-        <h1 id="heroTitle" class="font-display text-5xl font-black leading-tight mb-8" style="color:var(--fg)">Ecos de Moda</h1>
-        <a href="#catalogSection" class="inline-block px-8 py-4 rounded-full font-bold text-white text-base transition-all active:scale-95" style="background:var(--accent)">Ver Catálogo</a>
-      </div>
-    </section>
-    <section id="catalogSection" class="py-12 px-4">
-      <div class="max-w-lg mx-auto">
-        <h2 class="font-display text-3xl font-bold mb-6 text-center" style="color:var(--fg)">Nuestro Catálogo</h2>
-        <div id="sectionTabs" class="tabs-scroll flex gap-1 mb-6 border-b border-sand/50"></div>
-        <div id="productGrid" class="grid grid-cols-2 gap-3"></div>
-      </div>
-    </section>
-  </main>
-
-  <div id="lightbox" onclick="if(event.target===this)window.closeLightbox()"><button class="absolute top-4 right-4 text-white text-3xl" onclick="window.closeLightbox()">&times;</button><img id="lightboxImg" src="" alt=""></div>
-
-  <div id="cartModal" class="modal-overlay"><div class="modal-box bg-white p-6 shadow-2xl">
-    <div class="flex justify-between items-center mb-6"><h3 class="font-display text-xl font-bold" style="color:var(--fg)">Mi Carrito</h3><button type="button" onclick="window.closeAllModals()" class="text-drift text-xl"><i class="fas fa-times"></i></button></div>
-    <div id="cartItems" class="space-y-4 mb-6"></div>
-    <div id="checkoutForm" class="space-y-3 border-t border-sand pt-4 hidden">
-      <h4 class="font-bold text-base">Datos de Envío</h4>
-      <input type="text" id="checkName" placeholder="Tu nombre completo" class="admin-input border-sand bg-white text-charcoal">
-      <input type="tel" id="checkPhone" placeholder="Número de teléfono" class="admin-input border-sand bg-white text-charcoal">
-      <input type="text" id="checkAddress" placeholder="Dirección de entrega" class="admin-input border-sand bg-white text-charcoal">
-      <select id="checkMunicipality" class="admin-input border-sand bg-white text-charcoal"><option value="">Selecciona el municipio</option></select>
-      <select id="checkPayment" class="admin-input border-sand bg-white text-charcoal"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option></select>
-      <textarea id="checkNotes" rows="2" placeholder="Notas adicionales (opcional)" class="admin-input border-sand bg-white text-charcoal" style="resize:none;"></textarea>
-      <div id="cartTotalSummary" class="text-right pt-2"></div>
-      <button type="button" id="sendWhatsapp" class="w-full py-3 rounded-xl font-bold text-white text-base bg-green-600 active:scale-95 transition flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-xl"></i> Enviar Pedido</button>
+    <!-- Toasts -->
+    <div id="toastSuccess" class="toast fixed bottom-6 right-6 z-[70] bg-green-500/90 backdrop-blur-lg text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div><div class="font-semibold text-sm" id="toastSuccessTitle">¡Mensaje enviado!</div><div class="text-xs text-white/80" id="toastSuccessMsg">Te contactaremos en menos de 24 horas.</div></div>
     </div>
-  </div></div>
-
-  <div id="loginModal" class="modal-overlay"><div class="modal-box bg-white p-8 shadow-2xl"><h3 class="font-display text-xl font-bold mb-4 text-center" style="color:var(--fg)">Acceso Admin</h3><div class="space-y-4"><input id="loginUser" type="email" class="admin-input border-sand bg-white text-charcoal" placeholder="Email"><input id="loginPass" type="password" class="admin-input border-sand bg-white text-charcoal" placeholder="Contraseña"><p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas. ¿Creaste el usuario en Firebase?</p><button type="button" id="loginBtn" class="w-full py-3 rounded-xl font-bold text-white text-base active:scale-95 transition" style="background:var(--accent)">Iniciar Sesión</button><button type="button" onclick="window.closeAllModals()" class="w-full py-3 rounded-xl font-bold text-drift border border-sand text-base">Cancelar</button></div></div></div>
-
-  <div id="adminModal" class="modal-overlay"><div class="modal-box bg-admin text-white flex flex-col shadow-2xl" style="height:100vh; max-height:100vh; border-radius:0;">
-    <header class="p-4 border-b border-gray-700 flex justify-between items-center shrink-0"><h2 class="font-display text-lg font-bold text-fuchsia">Admin</h2><button type="button" onclick="window.closeAllModals()" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center"><i class="fas fa-times text-xl"></i></button></header>
-    <div class="flex gap-1 p-3 border-b border-gray-700 shrink-0 bg-adminCard/50 overflow-x-auto tabs-scroll">
-      <button type="button" onclick="window.showAdminPage('dashboard')" class="admin-tab px-3 py-2 rounded-lg text-xs font-bold text-gray-300 shrink-0" data-page="dashboard"><i class="fas fa-chart-bar mr-1"></i> Inicio</button>
-      <button type="button" onclick="window.showAdminPage('sections')" class="admin-tab px-3 py-2 rounded-lg text-xs font-bold text-gray-300 shrink-0" data-page="sections"><i class="fas fa-layer-group mr-1"></i> Secciones</button>
-      <button type="button" onclick="window.showAdminPage('products')" class="admin-tab px-3 py-2 rounded-lg text-xs font-bold text-gray-300 shrink-0" data-page="products"><i class="fas fa-boxes-stacked mr-1"></i> Productos</button>
-      <button type="button" onclick="window.showAdminPage('appearance')" class="admin-tab px-3 py-2 rounded-lg text-xs font-bold text-gray-300 shrink-0" data-page="appearance"><i class="fas fa-palette mr-1"></i> Aspecto</button>
-      <button type="button" onclick="window.showAdminPage('settings')" class="admin-tab px-3 py-2 rounded-lg text-xs font-bold text-gray-300 shrink-0" data-page="settings"><i class="fas fa-cog mr-1"></i> Config</button>
+    <div id="toastError" class="toast fixed bottom-6 right-6 z-[70] bg-red-500/90 backdrop-blur-lg text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div><div class="font-semibold text-sm" id="toastErrorTitle">Error</div><div class="text-xs text-white/80" id="toastErrorMsg">Ha ocurrido un problema.</div></div>
     </div>
-    <div id="adminContent" class="flex-1 overflow-y-auto admin-scroll p-5"></div>
-    <footer class="p-3 border-t border-gray-700 shrink-0"><button type="button" id="adminLogout" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl hover:bg-red-900/30 text-red-400 font-bold transition"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button></footer>
-  </div></div>
 
-  <div id="toast" class="toast"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-
-    const firebaseConfig = { 
-      apiKey: "AIzaSyCHQvXHPyZbiqlhMsoDsSqkjrQ5wATj-Cw", 
-      authDomain: "ecosdemoda-40202.firebaseapp.com", 
-      projectId: "ecosdemoda-40202", 
-      storageBucket: "ecosdemoda-40202.firebasestorage.app", 
-      messagingSenderId: "1077783413744", 
-      appId: "1:1077783413744:web:bebfb4f7956f6472709335" 
-    };
-    
-    const app = initializeApp(firebaseConfig); 
-    const auth = getAuth(app); 
-    const db = getFirestore(app);
-
-    let storeData = { sections: [] }, isLoggedIn = false, currentAdminPage = 'dashboard', activeSectionTab = -1, adminSelectedSection = 0, cart = [], editingSectionId = null, editingProductId = null, editingProductSectionId = null;
-
-    const DEFAULT_DATA = {
-      storeName: 'Ecos de Moda', heroSubtitle: 'Tienda de Regalos', heroTitle: 'Ecos de Moda',
-      backgroundColor: '#FFFAFC', headerColor: '#1A1A1A', accentColor: '#E91E8C',
-      whatsappNumber: '53000000', exchangeRate: 300,
-      shippingZones: [ { name: 'Habana Vieja', cost: 300 }, { name: 'Centro Habana', cost: 300 }, { name: 'Playa', cost: 500 } ],
-      sections: [
-        { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', priceCUP: 3000, quantity: 5, image: 'https://picsum.photos/seed/vela01/400/400' } ] },
-        { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 2, name: 'Set de Copas', priceCUP: 7500, quantity: 2, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
-      ]
-    };
-
-    function sanitizeData() { if (!storeData.sections) storeData.sections = []; if (!storeData.shippingZones) storeData.shippingZones = []; storeData.exchangeRate = Number(storeData.exchangeRate) || 300; storeData.sections.forEach(s => { if (!s.products) s.products = []; s.id = Number(s.id); s.products.forEach(p => { p.id = Number(p.id); if (p.price !== undefined && p.priceCUP === undefined) { p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300)); delete p.price; } p.priceCUP = Number(p.priceCUP) || 0; p.quantity = Number(p.quantity) || 10; }); }); }
-
-    async function initDatabase() {
-      try {
-        const d = await getDoc(doc(db, "store", "data"));
-        if (d.exists()) { storeData = d.data(); } else { storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); await setDoc(doc(db, "store", "data"), storeData); }
-      } catch (e) { console.error("Error carga inicial:", e); }
-      sanitizeData(); applyAppearance(); renderCatalog();
-      onSnapshot(doc(db, "store", "data"), (d) => { if (d.exists()) { storeData = d.data(); sanitizeData(); applyAppearance(); renderCatalog(); if (document.getElementById('adminModal').classList.contains('visible')) window.showAdminPage(currentAdminPage); } }, (error) => { console.error("Error tiempo real:", error); });
-    }
-    
-    async function saveData() { 
-      try { await setDoc(doc(db, "store", "data"), JSON.parse(JSON.stringify(storeData))); } catch (e) { 
-        console.error("Error al guardar:", e); 
-        showToast('Error al guardar. ¿Pegaste una URL de imagen muy larga?', 'error'); throw e; 
-      } 
-    }
-
-    function initAuth() { onAuthStateChanged(auth, (u) => { isLoggedIn = !!u; document.getElementById('navAdmin').querySelector('i').className = isLoggedIn ? 'fas fa-unlock text-fuchsia' : 'fas fa-lock'; }); }
-    async function handleLogin() { try { await signInWithEmailAndPassword(auth, document.getElementById('loginUser').value, document.getElementById('loginPass').value); closeAllModals(); openAdminPanel('dashboard'); } catch (e) { document.getElementById('loginError').classList.remove('hidden'); } }
-    async function handleLogout() { await signOut(auth); closeAllModals(); showToast('Sesión cerrada', 'info'); }
-
-    function applyAppearance() { document.documentElement.style.setProperty('--bg', storeData.backgroundColor || '#FFFAFC'); document.documentElement.style.setProperty('--fg', storeData.headerColor || '#1A1A1A'); document.documentElement.style.setProperty('--accent', storeData.accentColor || '#E91E8C'); document.body.style.background = storeData.backgroundColor; document.body.style.color = storeData.headerColor; document.getElementById('heroTitle').textContent = storeData.heroTitle || 'Ecos de Moda'; document.getElementById('heroSubtitle').textContent = storeData.heroSubtitle || 'Tienda de Regalos'; }
-    function getUSD(priceCUP) { return Number(priceCUP) / (Number(storeData.exchangeRate) || 300); }
-    function formatPrice(priceCUP) { return `${getUSD(priceCUP).toFixed(2)} USD <span class="text-xs text-drift font-normal">| ${Math.round(Number(priceCUP)).toLocaleString()} CUP</span>`; }
-
-    window.openLightbox = function(src) { document.getElementById('lightboxImg').src = src; document.getElementById('lightbox').classList.add('active'); };
-    window.closeLightbox = function() { document.getElementById('lightbox').classList.remove('active'); };
-
-    function switchScreen(screen) {
-      document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
-      if (screen === 'catalog') { document.getElementById('navCatalog').classList.add('active'); window.scrollTo({top:0, behavior:'smooth'}); }
-      else if (screen === 'cart') { document.getElementById('navCart').classList.add('active'); openModal('cartModal'); renderCartModal(); }
-    }
-
-    function renderCatalog() { 
-      try {
-        if (activeSectionTab >= storeData.sections.length) activeSectionTab = -1;
-        const tC = document.getElementById('sectionTabs'), gC = document.getElementById('productGrid'), secs = storeData.sections || []; 
-        let tH = `<button type="button" class="tab-btn ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`; 
-        secs.forEach((s, i) => { if(!s) return; tH += `<button type="button" class="tab-btn ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${s.icon || 'fas fa-gift'} mr-1"></i>${s.name || ''}</button>`; }); 
-        tC.innerHTML = tH; let pH = ''; const showS = activeSectionTab === -1 ? secs : (secs[activeSectionTab] ? [secs[activeSectionTab]] : secs); 
-        showS.forEach(s => { if (!s || !s.products) return; if (activeSectionTab === -1 && secs.length > 1) pH += `<div class="col-span-2 mt-4 mb-1"><h3 class="font-display text-lg font-bold"><i class="${s.icon || ''} mr-2" style="color:var(--accent)"></i>${s.name || ''}</h3></div>`; s.products.forEach(p => { if(!p) return; const qty = Number(p.quantity) || 0; const isAvailable = qty > 0; const imgSrc = p.image || 'https://picsum.photos/seed/default/400/400';
-            pH += `<article class="product-card shadow-md border border-sand/50 flex flex-col"><div class="overflow-hidden h-40 bg-sand/20 cursor-zoom-in" onclick="window.openLightbox('${imgSrc}')"><img src="${imgSrc}" alt="${p.name || ''}" class="w-full h-full object-cover" loading="lazy"></div><div class="p-3 flex flex-col flex-grow"><h4 class="font-display text-sm font-bold mb-1 leading-tight" style="color:var(--fg)">${p.name || ''}</h4><p class="text-[11px] ${isAvailable ? 'text-green-600' : 'text-red-500'} font-semibold mb-1">${isAvailable ? `<i class="fas fa-check-circle mr-1"></i>Disp: ${qty}` : '<i class="fas fa-times-circle mr-1"></i>Agotado'}</p><p class="text-sm font-bold mb-3" style="color:var(--accent)">${formatPrice(p.priceCUP || 0)}</p><div class="mt-auto">${isAvailable ? `<button type="button" onclick="window.addToCart(${s.id}, ${p.id})" class="w-full py-2 rounded-lg font-bold text-white text-xs active:scale-95 transition" style="background:var(--accent)"><i class="fas fa-bag-shopping mr-1"></i>Agregar</button>` : `<button type="button" disabled class="w-full py-2 rounded-lg font-bold text-white bg-gray-400 cursor-not-allowed text-xs">Agotado</button>`}</div></div></article>`; }); }); gC.innerHTML = pH || '<p class="col-span-2 text-center text-drift py-12">No hay productos.</p>'; 
-      } catch(e) { console.error("Error render:", e); }
-    }
-    
-    window.setActiveTab = function(i) { activeSectionTab = i; renderCatalog(); };
-    window.addToCart = function(sId, pId) { const s = storeData.sections.find(x => x.id === Number(sId)); if(!s) return; const p = s.products.find(x => x.id === Number(pId)); if(!p) return; const qty = Number(p.quantity) || 0; const currentInCart = cart.find(x => x.id === p.id)?.quantity || 0; if (currentInCart >= qty) { showToast('No hay más unidades', 'error'); return; } const e = cart.find(x => x.id === p.id); if (e) e.quantity++; else cart.push({ id: p.id, name: p.name, priceCUP: Number(p.priceCUP) || 0, image: p.image, quantity: 1 }); updateCartBadge(); showToast('Añadido', 'success'); }
-    window.removeFromCart = function(pId) { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); }
-    window.updateQuantity = function(pId, d) { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); }
-    function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
-    
-    function renderCartModal() { 
-      const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); 
-      if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } 
-      let h = '', tCUP = 0; cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; h += `<div class="flex gap-3 items-center border-b border-sand pb-3"><img src="${i.image || ''}" class="w-14 h-14 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold text-sm">${i.name || ''}</h4><p class="text-xs" style="color:var(--accent)">${formatPrice(i.priceCUP || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">-</button><span class="font-bold w-4 text-center text-sm">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">+</button></div></div>`; }); cI.innerHTML = h; 
-      const sel = document.getElementById('checkMunicipality'); sel.innerHTML = '<option value="">Selecciona el municipio</option>'; (storeData.shippingZones || []).forEach(z => { sel.innerHTML += `<option value="${z.name}" data-cost="${z.cost}">${z.name} (+${Math.round(z.cost).toLocaleString()} CUP)</option>`; });
-      function updateTotalDisplay() { const selectedOption = sel.options[sel.selectedIndex]; const shippingCost = Number(selectedOption.dataset.cost) || 0; const totalCUP = tCUP + shippingCost; document.getElementById('cartTotalSummary').innerHTML = `<p class="text-xs text-drift">Productos: ${getUSD(tCUP).toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP</p>${shippingCost > 0 ? `<p class="text-xs text-drift"><i class="fas fa-truck mr-1"></i>Mensajería: ${getUSD(shippingCost).toFixed(2)} USD | ${Math.round(shippingCost).toLocaleString()} CUP</p>` : ''}<p class="font-bold text-lg mt-1" style="color:var(--accent)">Total: ${getUSD(totalCUP).toFixed(2)} USD | ${Math.round(totalCUP).toLocaleString()} CUP</p>`; }
-      sel.onchange = updateTotalDisplay; updateTotalDisplay(); cF.classList.remove('hidden'); 
-    }
-    
-    function sendWhatsappOrder() { 
-      const name = document.getElementById('checkName').value.trim(); const phone = document.getElementById('checkPhone').value.trim(); const address = document.getElementById('checkAddress').value.trim(); const muniSelect = document.getElementById('checkMunicipality'); const municipality = muniSelect.value; const shippingCost = Number(muniSelect.options[muniSelect.selectedIndex].dataset.cost) || 0; const payment = document.getElementById('checkPayment').value; const notes = document.getElementById('checkNotes').value.trim(); 
-      if (!name || !phone || !address || !municipality) { showToast('Completa nombre, teléfono, dirección y municipio', 'error'); return; } 
-      let msg = `🛒 *Pedido de ${storeData.storeName}*\n\n👤 *Cliente:* ${name}\n📞 *Teléfono:* ${phone}\n📍 *Dirección:* ${address}, ${municipality}\n💳 *Pago:* ${payment}\n`; if (notes) msg += `📝 *Notas:* ${notes}\n`; msg += `\n📦 *Productos:*\n`; 
-      let tCUP = 0; cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; msg += `  • ${i.name} x${i.quantity} — ${getUSD(subCUP).toFixed(2)} USD\n`; for(let s of storeData.sections) { const p = s.products.find(x => x.id === i.id); if(p) { p.quantity = Math.max(0, (Number(p.quantity) || 0) - i.quantity); } } }); const totalCUP = tCUP + shippingCost;
-      msg += `\n🚚 *Mensajería a ${municipality}:* ${getUSD(shippingCost).toFixed(2)} USD | ${Math.round(shippingCost).toLocaleString()} CUP\n`; msg += `\n💰 *Total Final:* ${getUSD(totalCUP).toFixed(2)} USD | ${Math.round(totalCUP).toLocaleString()} CUP`; 
-      saveData().catch(e => console.error("Error actualizando inventario:", e)); window.open(`https://wa.me/${(storeData.whatsappNumber || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank'); cart = []; updateCartBadge(); closeAllModals(); 
-    }
-
-    function openModal(id) { document.getElementById(id).classList.add('visible'); if (id === 'cartModal') renderCartModal(); }
-    function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('visible')); }
-    function openAdminPanel(page) { openModal('adminModal'); window.showAdminPage(page); }
-    function handleAdminClick() { isLoggedIn ? openAdminPanel('dashboard') : openModal('loginModal'); }
-    let toastTimer; function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + type; clearTimeout(toastTimer); setTimeout(() => t.classList.add('show'), 10); toastTimer = setTimeout(() => t.classList.remove('show'), 3500); }
-
-    function showAdminPage(pg) { currentAdminPage = pg; editingSectionId = null; editingProductId = null; document.querySelectorAll('.admin-tab').forEach(b => { const isActive = b.dataset.page === pg; b.classList.toggle('bg-fuchsia/20', isActive); b.classList.toggle('text-fuchsia', isActive); b.classList.toggle('text-gray-300', !isActive); }); const c = document.getElementById('adminContent'); if (pg === 'dashboard') renderDashboard(c); else if (pg === 'sections') renderSectionList(c); else if (pg === 'products') renderProductList(c); else if (pg === 'appearance') renderAppearance(c); else if (pg === 'settings') renderSettings(c); }
-    window.showAdminPage = showAdminPage;
-
-    function renderDashboard(el) { let t = 0; storeData.sections.forEach(s => t += (s.products || []).length); el.innerHTML = `<div class="grid grid-cols-2 gap-4"><div class="bg-adminCard rounded-xl p-5 border border-gray-700"><p class="text-gray-400 text-xs">Secciones</p><p class="text-2xl font-bold text-fuchsia">${storeData.sections.length}</p></div><div class="bg-adminCard rounded-xl p-5 border border-gray-700"><p class="text-gray-400 text-xs">Productos</p><p class="text-2xl font-bold">${t}</p></div></div>`; }
-
-    function renderSectionList(el) { let l = ''; storeData.sections.forEach(s => { l += `<div class="bg-adminCard rounded-xl p-4 border border-gray-700 flex justify-between items-center gap-3"><div class="flex items-center gap-3"><i class="${s.icon || 'fas fa-gift'} text-fuchsia"></i><span class="font-bold text-sm">${s.name || ''}</span></div><div class="flex gap-2"><button type="button" onclick="window.renderSectionForm(${s.id})" class="px-3 py-2 rounded-lg bg-gray-700 font-bold text-xs">Editar</button><button type="button" onclick="window.deleteSection(${s.id})" class="px-3 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold text-xs">Eliminar</button></div></div>`; }); el.innerHTML = `<div class="mb-4"><button type="button" onclick="window.renderSectionForm(null)" class="w-full px-4 py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nueva Sección</button></div><div class="space-y-3">${l}</div>`; }
-    window.renderSectionForm = function(id) { editingSectionId = id; const s = id ? storeData.sections.find(x => x.id === Number(id)) : null; const c = document.getElementById('adminContent'); c.innerHTML = `<button type="button" onclick="window.showAdminPage('sections')" class="text-drift hover:text-white mb-4 inline-flex items-center gap-2 text-sm"><i class="fas fa-arrow-left"></i> Volver</button><h3 class="font-display text-lg font-bold mb-4">${s ? 'Editar' : 'Nueva'} Sección</h3><div class="space-y-3"><div><label class="block text-xs text-gray-400 mb-1">Nombre *</label><input id="sf_name" type="text" value="${s ? s.name : ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">Icono</label><input id="sf_icon" type="text" value="${s ? s.icon : 'fas fa-gift'}" class="admin-input"></div><button type="button" onclick="window.saveSection()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar</button></div>`; };
-    window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === Number(editingSectionId)); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } try { await saveData(); showToast('Sección guardada', 'success'); window.showAdminPage('sections'); } catch(e) {} };
-    window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección y sus productos?')) return; storeData.sections = storeData.sections.filter(x => x.id !== Number(id)); try { await saveData(); showToast('Eliminada', 'success'); window.showAdminPage('sections'); } catch(e) {} };
-
-    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-8 text-gray-400"><p class="text-sm">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-3 px-4 py-2 rounded-lg bg-gray-700 font-bold text-xs">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || ''}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-24 object-cover bg-sand/20"><div class="p-3"><h4 class="font-bold text-xs truncate">${p.name || ''}</h4><p class="text-fuchsia text-xs">${formatPrice(p.priceCUP || 0)}</p><p class="text-[10px] mt-1 ${(Number(p.quantity)||0) > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${Number(p.quantity)||0}</p><div class="flex gap-2 mt-2"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-1.5 rounded-lg bg-gray-700 font-bold text-[11px]">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-1.5 rounded-lg bg-red-900/30 text-red-400 font-bold text-[11px]">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-3 mb-4"><select id="adminSectionSelect" class="admin-input text-sm">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-4 py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-2 gap-3">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
-
-    // FORMULARIO DE PRODUCTO ACTUALIZADO: USA URL EN VEZ DE SUBIR ARCHIVO
-    window.renderProductForm = function(secId, prodId) {
-      editingProductSectionId = secId; editingProductId = prodId;
-      const s = storeData.sections.find(x => x.id === Number(secId));
-      const p = prodId ? s?.products.find(x => x.id === Number(prodId)) : null;
-      const qty = p ? (Number(p.quantity) || 0) : 10; const priceCUP = p ? (Number(p.priceCUP) || 0) : 0;
-      const rate = Number(storeData.exchangeRate) || 300;
-      const c = document.getElementById('adminContent');
-      c.innerHTML = `
-        <button type="button" onclick="window.showAdminPage('products')" class="text-drift hover:text-white mb-4 inline-flex items-center gap-2 text-sm"><i class="fas fa-arrow-left"></i> Volver</button>
-        <h3 class="font-display text-lg font-bold mb-4">${p ? 'Editar' : 'Nuevo'} Producto <span class="text-xs text-gray-400 font-normal">(${s.name || ''})</span></h3>
-        <div class="space-y-3">
-          <div><label class="block text-xs text-gray-400 mb-1">Nombre *</label><input id="pf_name" type="text" value="${p ? p.name : ''}" class="admin-input"></div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs text-gray-400 mb-1">Precio (CUP) *</label>
-              <input id="pf_priceCUP" type="number" min="0" step="1" value="${priceCUP}" class="admin-input" oninput="document.getElementById('pf_usd_preview').textContent = (Number(this.value)/${rate}).toFixed(2)">
-              <p class="text-[10px] text-gray-500 mt-1">≈ <span id="pf_usd_preview">${getUSD(priceCUP).toFixed(2)}</span> USD</p>
+    <!-- NAVBAR -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-white/5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
+            <a href="#hero" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                    <i data-lucide="sun" class="w-5 h-5 text-white"></i>
+                </div>
+                <span class="text-xl font-semibold tracking-tight">Nexo<span class="text-orange-500">Solar</span></span>
+            </a>
+            <div class="hidden lg:flex items-center gap-8">
+                <a href="#servicios" class="text-neutral-400 hover:text-white transition-colors text-sm font-medium">Servicios</a>
+                <a href="#proceso" class="text-neutral-400 hover:text-white transition-colors text-sm font-medium">Proceso</a>
+                <a href="#calculadora" class="text-neutral-400 hover:text-white transition-colors text-sm font-medium">Calculadora</a>
+                <a href="#proyectos" class="text-neutral-400 hover:text-white transition-colors text-sm font-medium">Proyectos</a>
+                <a href="#faq" class="text-neutral-400 hover:text-white transition-colors text-sm font-medium">FAQ</a>
+                <a href="#contacto" class="text-neutral-400 hover:text-white transition-colors text-sm font-medium">Contacto</a>
             </div>
-            <div><label class="block text-xs text-gray-400 mb-1">Stock *</label><input id="pf_quantity" type="number" min="0" value="${qty}" class="admin-input"></div>
-          </div>
-          <div>
-            <label class="block text-xs text-gray-400 mb-1"><i class="fas fa-link mr-1"></i> URL de la Imagen *</label>
-            <input id="pf_image_url" type="url" value="${p ? p.image : ''}" placeholder="https://ejemplo.com/foto.jpg" class="admin-input">
-            <p class="text-[9px] text-gray-500 mt-1">Usa URLs de Imgur, Postimages, etc. Esto evita que la base de datos se llene y borre los datos.</p>
-            <img id="pf_img_preview" src="${p ? p.image : ''}" class="w-full h-28 object-contain rounded-xl mt-2 bg-sand/20 ${p && p.image ? '' : 'hidden'}">
-          </div>
-          <button type="button" id="saveProductBtn" onclick="window.saveProduct()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar Producto</button>
-        </div>`;
-      // Actualizar vista previa al pegar URL
-      setTimeout(() => { const urlInput = document.getElementById('pf_image_url'); if(urlInput) urlInput.oninput = (e) => { const val = e.target.value; if(val) { document.getElementById('pf_img_preview').src = val; document.getElementById('pf_img_preview').classList.remove('hidden'); } else { document.getElementById('pf_img_preview').classList.add('hidden'); } }; }, 50);
-    };
+            <div class="hidden md:flex items-center gap-4">
+                <div class="flex items-center gap-1.5" id="dbStatus" title="Estado de conexión a Supabase">
+                    <div class="w-2 h-2 rounded-full bg-neutral-600" id="dbDot"></div>
+                    <span class="text-[10px] text-neutral-600 uppercase tracking-wider" id="dbLabel">DB</span>
+                </div>
+                <a href="#contacto" class="btn-primary bg-orange-500 text-white font-semibold text-sm px-6 py-3 rounded-full inline-flex items-center gap-2">
+                    Solicitar Presupuesto <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+            <button id="menuToggle" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 hover:bg-white/5 transition-colors">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </nav>
 
-    window.saveProduct = async function() {
-      const name = document.getElementById('pf_name').value.trim(); 
-      const priceCUP = Number(document.getElementById('pf_priceCUP').value) || 0; 
-      const quantity = Number(document.getElementById('pf_quantity').value) || 0;
-      let imageUrl = document.getElementById('pf_image_url').value.trim(); 
-      const btn = document.getElementById('saveProductBtn');
-      
-      if (!name) { showToast('Nombre obligatorio', 'error'); return; }
-      if (priceCUP <= 0) { showToast('Precio CUP > 0', 'error'); return; }
-      if (!imageUrl) { imageUrl = `https://picsum.photos/seed/${Date.now()}/400/400`; }
-      
-      const s = storeData.sections.find(x => x.id === Number(editingProductSectionId)); if (!s) return; if (!s.products) s.products = [];
-      if (editingProductId) { const p = s.products.find(x => x.id === Number(editingProductId)); if (p) { p.name = name; p.priceCUP = priceCUP; p.quantity = quantity; p.image = imageUrl; } } 
-      else { s.products.push({ id: Date.now(), name, priceCUP, quantity, image: imageUrl }); }
-      
-      btn.disabled = true; btn.innerHTML = 'Guardando...';
-      try { await saveData(); showToast('¡Producto guardado en la nube!', 'success'); window.showAdminPage('products'); renderCatalog(); } catch (e) { btn.disabled = false; btn.innerHTML = 'Guardar Producto'; }
-    };
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-0 z-[60] bg-neutral-950/98 backdrop-blur-lg flex flex-col">
+        <div class="flex items-center justify-between px-6 py-4">
+            <a href="#hero" class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center"><i data-lucide="sun" class="w-5 h-5 text-white"></i></div>
+                <span class="text-xl font-semibold tracking-tight">Nexo<span class="text-orange-500">Solar</span></span>
+            </a>
+            <button id="menuClose" class="w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 hover:bg-white/5"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="flex flex-col items-center justify-center flex-1 gap-8">
+            <a href="#servicios" class="mobile-link text-2xl font-semibold text-neutral-300 hover:text-orange-500 transition-colors">Servicios</a>
+            <a href="#proceso" class="mobile-link text-2xl font-semibold text-neutral-300 hover:text-orange-500 transition-colors">Proceso</a>
+            <a href="#calculadora" class="mobile-link text-2xl font-semibold text-neutral-300 hover:text-orange-500 transition-colors">Calculadora</a>
+            <a href="#proyectos" class="mobile-link text-2xl font-semibold text-neutral-300 hover:text-orange-500 transition-colors">Proyectos</a>
+            <a href="#faq" class="mobile-link text-2xl font-semibold text-neutral-300 hover:text-orange-500 transition-colors">FAQ</a>
+            <a href="#contacto" class="mobile-link text-2xl font-semibold text-neutral-300 hover:text-orange-500 transition-colors">Contacto</a>
+            <a href="#contacto" class="btn-primary bg-orange-500 text-white font-semibold text-lg px-8 py-4 rounded-full mt-4">Solicitar Presupuesto</a>
+        </div>
+    </div>
 
-    window.deleteProduct = async function(secId, prodId) { if (!confirm('¿Eliminar?')) return; const s = storeData.sections.find(x => x.id === Number(secId)); if (s && s.products) { s.products = s.products.filter(x => x.id !== Number(prodId)); try { await saveData(); showToast('Eliminado', 'success'); renderProductList(document.getElementById('adminContent')); renderCatalog(); } catch(e) {} } };
+    <!-- HERO -->
+    <section id="hero" class="relative min-h-screen flex items-center hero-gradient solar-grid overflow-hidden">
+        <div class="absolute top-1/4 right-1/4 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl animate-float" style="animation-delay:-3s"></div>
+        <div class="absolute top-20 right-10 lg:right-32 w-32 h-32 lg:w-48 lg:h-48 opacity-10">
+            <div class="w-full h-full border-2 border-orange-500/30 rounded-full animate-spin-slow"></div>
+            <div class="absolute inset-4 border border-orange-500/20 rounded-full animate-spin-slow" style="animation-direction:reverse;animation-duration:8s"></div>
+            <div class="absolute inset-0 flex items-center justify-center"><div class="w-4 h-4 bg-orange-500/40 rounded-full"></div></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 pt-32 pb-24 w-full">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-8">
+                    <div class="animate-fade-in-up inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
+                        <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                        <span class="text-sm font-medium text-neutral-300">Líderes en energía solar en España</span>
+                    </div>
+                    <h1 class="animate-fade-in-up delay-100 text-5xl md:text-7xl lg:text-8xl font-semibold leading-[0.9] tracking-tight text-shadow-hero">
+                        <span class="gradient-text">Tu energía,</span><br>
+                        <span class="text-orange-500">tu futuro</span><br>
+                        <span class="gradient-text">solar.</span>
+                    </h1>
+                    <p class="animate-fade-in-up delay-200 text-lg md:text-xl text-neutral-400 max-w-lg leading-relaxed">
+                        Instalaciones solares llave en mano para hogares y empresas. Ahorra hasta un <span class="text-white font-medium">70% en tu factura eléctrica</span> con tecnología de última generación.
+                    </p>
+                    <div class="animate-fade-in-up delay-300 flex flex-wrap gap-4">
+                        <a href="#contacto" class="btn-primary bg-orange-500 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-3 animate-pulse-glow">
+                            Empieza Ahora <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#proceso" class="btn-secondary border border-white/10 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-3">
+                            <i data-lucide="play-circle" class="w-5 h-5"></i> Cómo Funciona
+                        </a>
+                    </div>
+                    <div class="animate-fade-in-up delay-400 flex flex-wrap gap-8 pt-4">
+                        <div><div class="text-3xl md:text-4xl font-semibold text-white" data-count="2500">0</div><div class="text-sm text-neutral-500 mt-1">Instalaciones</div></div>
+                        <div class="w-px bg-white/10"></div>
+                        <div><div class="text-3xl md:text-4xl font-semibold text-white" data-count="98">0</div><div class="text-sm text-neutral-500 mt-1">% Satisfacción</div></div>
+                        <div class="w-px bg-white/10"></div>
+                        <div><div class="text-3xl md:text-4xl font-semibold text-white" data-count="15">0</div><div class="text-sm text-neutral-500 mt-1">Años Experiencia</div></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 relative hidden lg:block">
+                    <div class="relative animate-fade-in-up delay-300">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl" style="box-shadow:0 20px 80px rgba(247,78,9,.15)">
+                            <img src="https://picsum.photos/seed/solar-panels-roof/600/700.jpg" alt="Instalación solar" class="w-full h-[500px] object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-6 left-6 right-6">
+                                <div class="glass-card rounded-2xl p-4 flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="trending-up" class="w-6 h-6 text-orange-500"></i></div>
+                                    <div><div class="text-sm text-neutral-400">Ahorro mensual medio</div><div class="text-xl font-semibold text-white">€180 — €420</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -top-6 -left-6 glass-card rounded-2xl p-4 animate-float" style="animation-delay:-2s">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center"><i data-lucide="leaf" class="w-5 h-5 text-green-400"></i></div>
+                                <div><div class="text-xs text-neutral-400">CO₂ evitado</div><div class="text-sm font-semibold">4.2 ton/año</div></div>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-4 -right-4 glass-card rounded-2xl p-4 animate-float" style="animation-delay:-4s">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center"><i data-lucide="zap" class="w-5 h-5 text-orange-500"></i></div>
+                                <div><div class="text-xs text-neutral-400">Energía producida</div><div class="text-sm font-semibold">5.8 kWp</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in-up delay-500">
+            <span class="text-xs text-neutral-500 uppercase tracking-widest">Scroll</span>
+            <div class="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center pt-2"><div class="w-1.5 h-3 bg-orange-500 rounded-full animate-bounce"></div></div>
+        </div>
+    </section>
 
-    function renderAppearance(el) { el.innerHTML = `<div class="space-y-4"><div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4"><h3 class="font-display text-sm font-bold text-fuchsia">Textos y Colores</h3><div><label class="block text-xs text-gray-400 mb-1">Nombre</label><input id="ap_storeName" type="text" value="${storeData.storeName || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle || ''}" class="admin-input"></div><div class="grid grid-cols-3 gap-3"><div><label class="block text-xs text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor || '#FFFAFC'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-xs text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor || '#1A1A1A'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-xs text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor || '#E91E8C'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div></div></div><button type="button" onclick="window.saveAppearance()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar</button></div>`; }
-    window.saveAppearance = async function() { storeData.storeName = document.getElementById('ap_storeName').value.trim(); storeData.heroTitle = document.getElementById('ap_heroTitle').value.trim(); storeData.heroSubtitle = document.getElementById('ap_heroSubtitle').value.trim(); storeData.backgroundColor = document.getElementById('ap_bgColor').value; storeData.headerColor = document.getElementById('ap_headerColor').value; storeData.accentColor = document.getElementById('ap_accentColor').value; try { await saveData(); showToast('Aspecto guardado', 'success'); } catch(e) {} };
+    <!-- TRUST BAR -->
+    <section class="border-y border-white/5 py-6 overflow-hidden bg-neutral-950">
+        <div class="flex"><div class="marquee-track flex items-center gap-16 whitespace-nowrap">
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Certificado ISO 9001</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Miembro de UNEF</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Garantía 25 años</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Instaladores Homologados</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Marca CE</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Financiación 100%</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Certificado ISO 9001</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Miembro de UNEF</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Garantía 25 años</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Instaladores Homologados</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Marca CE</span><span class="text-orange-500/30">◆</span>
+            <span class="text-neutral-600 text-sm font-medium uppercase tracking-widest">Financiación 100%</span><span class="text-orange-500/30">◆</span>
+        </div></div>
+    </section>
 
-    function renderSettings(el) { 
-      let zonesHtml = ''; (storeData.shippingZones || []).forEach((z, i) => { zonesHtml += `<div class="flex items-center gap-2 bg-gray-800 p-2 rounded-lg"><span class="flex-1 text-sm font-medium">${z.name || ''}</span><span class="text-fuchsia font-bold text-sm">${Math.round(z.cost || 0).toLocaleString()} CUP</span><button type="button" onclick="window.removeShippingZone(${i})" class="text-red-400 text-xs p-1 hover:text-red-300"><i class="fas fa-trash"></i></button></div>`; });
-      el.innerHTML = `<div class="space-y-4"><div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4"><h3 class="font-display text-sm font-bold text-fuchsia">Ventas y WhatsApp</h3><div><label class="block text-xs text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="admin-input"></div></div><div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4"><h3 class="font-display text-sm font-bold text-fuchsia"><i class="fas fa-truck mr-2"></i>Municipios y Mensajería</h3><div id="shippingZonesList" class="space-y-2 max-h-40 overflow-y-auto admin-scroll">${zonesHtml || '<p class="text-xs text-gray-500 text-center py-2">No hay municipios configurados</p>'}</div><div class="flex gap-2"><input id="sz_name" type="text" placeholder="Municipio" class="admin-input flex-1 text-sm py-2"><input id="sz_cost" type="number" placeholder="Costo CUP" class="admin-input w-28 text-sm py-2"></div><button type="button" onclick="window.addShippingZone()" class="w-full py-2 rounded-lg bg-gray-700 font-bold text-xs active:scale-95 transition">Añadir Municipio</button></div><button type="button" onclick="window.saveSettings()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar Configuración</button></div>`; 
+    <!-- SERVICIOS -->
+    <section id="servicios" class="relative bg-neutral-900 py-24 md:py-32">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="reveal max-w-2xl mb-16">
+                <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+                    <i data-lucide="settings" class="w-4 h-4 text-orange-500"></i>
+                    <span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Nuestros Servicios</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight mb-6">Soluciones solares<br><span class="text-orange-500">a tu medida</span></h2>
+                <p class="text-lg text-neutral-400 leading-relaxed">Desde el estudio inicial hasta el mantenimiento posterior, nos encargamos de todo.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="reveal card-hover glass-card rounded-3xl p-8 group cursor-pointer">
+                    <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="home" class="w-7 h-7 text-orange-500"></i></div>
+                    <h3 class="text-xl font-semibold mb-3">Solar Residencial</h3>
+                    <p class="text-neutral-400 leading-relaxed mb-6">Instalaciones fotovoltaicas para viviendas unifamiliares y comunidades de vecinos.</p>
+                    <div class="flex items-center gap-2 text-orange-500 text-sm font-semibold group-hover:gap-3 transition-all">Saber más <i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+                </div>
+                <div class="reveal card-hover glass-card rounded-3xl p-8 group cursor-pointer" style="transition-delay:100ms">
+                    <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="building-2" class="w-7 h-7 text-orange-500"></i></div>
+                    <h3 class="text-xl font-semibold mb-3">Solar Industrial</h3>
+                    <p class="text-neutral-400 leading-relaxed mb-6">Naves industriales y cubiertas de gran superficie para reducir costes energéticos.</p>
+                    <div class="flex items-center gap-2 text-orange-500 text-sm font-semibold group-hover:gap-3 transition-all">Saber más <i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+                </div>
+                <div class="reveal card-hover glass-card rounded-3xl p-8 group cursor-pointer" style="transition-delay:200ms">
+                    <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="battery-charging" class="w-7 h-7 text-orange-500"></i></div>
+                    <h3 class="text-xl font-semibold mb-3">Almacenamiento</h3>
+                    <p class="text-neutral-400 leading-relaxed mb-6">Baterías de litio para almacenar el exceso de energía y consumirla día y noche.</p>
+                    <div class="flex items-center gap-2 text-orange-500 text-sm font-semibold group-hover:gap-3 transition-all">Saber más <i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+                </div>
+                <div class="reveal card-hover glass-card rounded-3xl p-8 group cursor-pointer" style="transition-delay:100ms">
+                    <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="plug-zap" class="w-7 h-7 text-orange-500"></i></div>
+                    <h3 class="text-xl font-semibold mb-3">Punto de Recarga</h3>
+                    <p class="text-neutral-400 leading-relaxed mb-6">Cargadores para vehículo eléctrico compatibles con tu instalación solar.</p>
+                    <div class="flex items-center gap-2 text-orange-500 text-sm font-semibold group-hover:gap-3 transition-all">Saber más <i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+                </div>
+                <div class="reveal card-hover glass-card rounded-3xl p-8 group cursor-pointer" style="transition-delay:200ms">
+                    <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="wrench" class="w-7 h-7 text-orange-500"></i></div>
+                    <h3 class="text-xl font-semibold mb-3">Mantenimiento</h3>
+                    <p class="text-neutral-400 leading-relaxed mb-6">Servicio preventivo y correctivo con monitorización 24/7 para maximizar producción.</p>
+                    <div class="flex items-center gap-2 text-orange-500 text-sm font-semibold group-hover:gap-3 transition-all">Saber más <i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+                </div>
+                <div class="reveal card-hover glass-card rounded-3xl p-8 group cursor-pointer" style="transition-delay:300ms">
+                    <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="file-text" class="w-7 h-7 text-orange-500"></i></div>
+                    <h3 class="text-xl font-semibold mb-3">Subvenciones y Ayudas</h3>
+                    <p class="text-neutral-400 leading-relaxed mb-6">Gestionamos todas las ayudas: Next Generation, IDAE, programas autonómicos y locales.</p>
+                    <div class="flex items-center gap-2 text-orange-500 text-sm font-semibold group-hover:gap-3 transition-all">Saber más <i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section class="relative bg-neutral-950 py-24 md:py-32 overflow-hidden">
+        <div class="absolute inset-0 solar-grid opacity-50"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 relative">
+            <div class="grid lg:grid-cols-12 gap-16 items-center">
+                <div class="lg:col-span-5 reveal">
+                    <div class="relative">
+                        <div class="rounded-3xl overflow-hidden"><img src="https://picsum.photos/seed/solar-worker-install/600/750.jpg" alt="Técnico solar" class="w-full h-[450px] lg:h-[550px] object-cover"></div>
+                        <div class="absolute -bottom-4 -right-4 w-32 h-32 border-4 border-orange-500/20 rounded-3xl -z-10"></div>
+                        <div class="absolute -top-4 -left-4 w-24 h-24 bg-orange-500/10 rounded-2xl -z-10"></div>
+                        <div class="absolute top-6 left-6 glass-card rounded-xl px-4 py-3"><div class="flex items-center gap-2"><i data-lucide="shield-check" class="w-5 h-5 text-green-400"></i><span class="text-sm font-semibold">Garantía Total</span></div></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7 space-y-10">
+                    <div class="reveal">
+                        <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6">
+                            <i data-lucide="award" class="w-4 h-4 text-orange-500"></i>
+                            <span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">¿Por qué Nexo Solar?</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight mb-6">Energía que<br><span class="text-orange-500">de verdad</span> funciona</h2>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="reveal flex gap-5 group"><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="calculator" class="w-6 h-6 text-orange-500"></i></div><div><h3 class="text-lg font-semibold mb-1">Ahorro garantizado desde el día uno</h3><p class="text-neutral-400 leading-relaxed">Si no cumplimos las estimaciones, te devolvemos la diferencia.</p></div></div>
+                        <div class="reveal flex gap-5 group" style="transition-delay:100ms"><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="clock" class="w-6 h-6 text-orange-500"></i></div><div><h3 class="text-lg font-semibold mb-1">Instalación en 1-3 días</h3><p class="text-neutral-400 leading-relaxed">La mayoría de instalaciones domésticas las completamos en menos de 48 horas.</p></div></div>
+                        <div class="reveal flex gap-5 group" style="transition-delay:200ms"><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="monitor-smartphone" class="w-6 h-6 text-orange-500"></i></div><div><h3 class="text-lg font-semibold mb-1">Monitorización en tiempo real</h3><p class="text-neutral-400 leading-relaxed">App propia para consultar producción, consumo y ahorro desde el móvil.</p></div></div>
+                        <div class="reveal flex gap-5 group" style="transition-delay:300ms"><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/20 transition-colors"><i data-lucide="banknote" class="w-6 h-6 text-orange-500"></i></div><div><h3 class="text-lg font-semibold mb-1">Financiación sin entrada</h3><p class="text-neutral-400 leading-relaxed">Tu cuota mensual será menor que lo que ahorras. Desde el primer mes, ganas.</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROCESO -->
+    <section id="proceso" class="relative bg-neutral-900 py-24 md:py-32">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="reveal text-center max-w-2xl mx-auto mb-20">
+                <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6"><i data-lucide="list-checks" class="w-4 h-4 text-orange-500"></i><span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Proceso Simple</span></div>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight mb-6">De la consulta a la<br><span class="text-orange-500">energía solar</span></h2>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="reveal relative"><div class="glass-card rounded-3xl p-8 h-full card-hover"><div class="text-6xl font-semibold text-orange-500/20 mb-4">01</div><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mb-5"><i data-lucide="phone" class="w-6 h-6 text-orange-500"></i></div><h3 class="text-lg font-semibold mb-3">Contacto Inicial</h3><p class="text-neutral-400 text-sm leading-relaxed">Analizamos tu caso sin compromiso en 5 minutos.</p></div><div class="hidden lg:block absolute top-1/2 -right-4 w-8 h-px bg-orange-500/30"></div></div>
+                <div class="reveal relative" style="transition-delay:100ms"><div class="glass-card rounded-3xl p-8 h-full card-hover"><div class="text-6xl font-semibold text-orange-500/20 mb-4">02</div><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mb-5"><i data-lucide="search" class="w-6 h-6 text-orange-500"></i></div><h3 class="text-lg font-semibold mb-3">Estudio Personalizado</h3><p class="text-neutral-400 text-sm leading-relaxed">Visita técnica y diseño de la instalación óptima.</p></div><div class="hidden lg:block absolute top-1/2 -right-4 w-8 h-px bg-orange-500/30"></div></div>
+                <div class="reveal relative" style="transition-delay:200ms"><div class="glass-card rounded-3xl p-8 h-full card-hover"><div class="text-6xl font-semibold text-orange-500/20 mb-4">03</div><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mb-5"><i data-lucide="hard-hat" class="w-6 h-6 text-orange-500"></i></div><h3 class="text-lg font-semibold mb-3">Instalación</h3><p class="text-neutral-400 text-sm leading-relaxed">Todo instalado en 1-3 días. Permisos incluidos.</p></div><div class="hidden lg:block absolute top-1/2 -right-4 w-8 h-px bg-orange-500/30"></div></div>
+                <div class="reveal" style="transition-delay:300ms"><div class="glass-card rounded-3xl p-8 h-full card-hover border-orange-500/20"><div class="text-6xl font-semibold text-orange-500/20 mb-4">04</div><div class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center mb-5"><i data-lucide="rocket" class="w-6 h-6 text-orange-500"></i></div><h3 class="text-lg font-semibold mb-3">¡Ahorra!</h3><p class="text-neutral-400 text-sm leading-relaxed">Genera tu propia energía desde el primer día.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALCULADORA -->
+    <section id="calculadora" class="relative bg-neutral-950 py-24 md:py-32 overflow-hidden">
+        <div class="absolute inset-0 solar-grid opacity-30"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-3xl"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 relative">
+            <div class="reveal text-center max-w-2xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6"><i data-lucide="calculator" class="w-4 h-4 text-orange-500"></i><span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Calculadora Solar</span></div>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight mb-6">Calcula tu<br><span class="text-orange-500">ahorro</span></h2>
+            </div>
+            <div class="reveal max-w-4xl mx-auto">
+                <div class="glass-card rounded-3xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <div class="space-y-8">
+                            <div>
+                                <div class="flex justify-between mb-3"><label class="text-sm font-medium text-neutral-300">Factura mensual</label><span class="text-sm font-semibold text-orange-500" id="billValue">€150</span></div>
+                                <input type="range" id="billSlider" min="50" max="500" value="150" class="w-full">
+                                <div class="flex justify-between mt-1"><span class="text-xs text-neutral-600">€50</span><span class="text-xs text-neutral-600">€500</span></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-3"><label class="text-sm font-medium text-neutral-300">Superficie de tejado</label><span class="text-sm font-semibold text-orange-500" id="roofValue">25 m²</span></div>
+                                <input type="range" id="roofSlider" min="10" max="100" value="25" class="w-full">
+                                <div class="flex justify-between mt-1"><span class="text-xs text-neutral-600">10 m²</span><span class="text-xs text-neutral-600">100 m²</span></div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-neutral-300 block mb-3">Orientación del tejado</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button class="orientation-btn active bg-orange-500/20 border border-orange-500/40 text-orange-400 text-sm font-medium py-2.5 rounded-xl transition-all" data-value="sur">Sur</button>
+                                    <button class="orientation-btn bg-white/5 border border-white/10 text-neutral-400 text-sm font-medium py-2.5 rounded-xl transition-all" data-value="este">Este</button>
+                                    <button class="orientation-btn bg-white/5 border border-white/10 text-neutral-400 text-sm font-medium py-2.5 rounded-xl transition-all" data-value="oeste">Oeste</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-neutral-300 block mb-2">Email (opcional — recibe tu resultado)</label>
+                                <input type="email" id="calcEmail" placeholder="tu@email.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all text-sm">
+                            </div>
+                        </div>
+                        <div class="space-y-6 flex flex-col justify-center">
+                            <div class="bg-white/5 rounded-2xl p-6 text-center"><div class="text-sm text-neutral-400 mb-2">Paneles recomendados</div><div class="text-4xl font-semibold text-white" id="panelCount">8</div><div class="text-xs text-neutral-500 mt-1">paneles de 400W</div></div>
+                            <div class="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-6 text-center"><div class="text-sm text-orange-400 mb-2">Ahorro anual estimado</div><div class="text-5xl font-semibold text-orange-500" id="annualSavings">€1.260</div></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white/5 rounded-2xl p-4 text-center"><div class="text-xs text-neutral-500 mb-1">Potencia</div><div class="text-xl font-semibold" id="powerKw">3.2 kWp</div></div>
+                                <div class="bg-white/5 rounded-2xl p-4 text-center"><div class="text-xs text-neutral-500 mb-1">Payback</div><div class="text-xl font-semibold" id="payback">4.5 años</div></div>
+                            </div>
+                            <button id="saveCalcBtn" class="btn-primary bg-orange-500 text-white font-semibold text-center py-4 rounded-full flex items-center justify-center gap-2">
+                                <span id="saveCalcText">Guardar resultado y solicitar estudio</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4" id="saveCalcArrow"></i>
+                                <svg id="saveCalcSpinner" class="hidden animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROYECTOS (Supabase) -->
+    <section id="proyectos" class="relative bg-neutral-900 py-24 md:py-32">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+                <div class="max-w-xl">
+                    <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6"><i data-lucide="image" class="w-4 h-4 text-orange-500"></i><span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Proyectos</span></div>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight">Instalaciones<br><span class="text-orange-500">reales</span></h2>
+                </div>
+                <p class="text-neutral-400 max-w-md leading-relaxed">Cada proyecto es único. Descubre cómo hemos transformado el consumo energético.</p>
+            </div>
+            <div id="proyectosSkeleton" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"><div class="skeleton h-80"></div><div class="skeleton h-80"></div><div class="skeleton h-80"></div><div class="skeleton h-80 hidden md:block"></div><div class="skeleton h-80 hidden md:block"></div><div class="skeleton h-80 hidden md:block"></div></div>
+            <div id="proyectosGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+            <div id="proyectosFallback" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIOS (Supabase) -->
+    <section class="relative bg-neutral-950 py-24 md:py-32 overflow-hidden">
+        <div class="absolute top-1/2 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl -translate-y-1/2"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 relative">
+            <div class="reveal text-center max-w-2xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6"><i data-lucide="message-circle" class="w-4 h-4 text-orange-500"></i><span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Testimonios</span></div>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight mb-6">Lo que dicen<br><span class="text-orange-500">nuestros clientes</span></h2>
+            </div>
+            <div id="testimoniosSkeleton" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"><div class="skeleton h-64"></div><div class="skeleton h-64"></div><div class="skeleton h-64"></div></div>
+            <div id="testimoniosGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+            <div id="testimoniosFallback" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="relative bg-neutral-900 py-24 md:py-32">
+        <div class="max-w-3xl mx-auto px-6 lg:px-12">
+            <div class="reveal text-center mb-16">
+                <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6"><i data-lucide="help-circle" class="w-4 h-4 text-orange-500"></i><span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Preguntas Frecuentes</span></div>
+                <h2 class="text-4xl md:text-5xl font-semibold leading-[0.95] tracking-tight">Resolvemos tus<br><span class="text-orange-500">dudas</span></h2>
+            </div>
+            <div class="reveal space-y-4">
+                <div class="faq-item glass-card rounded-2xl overflow-hidden"><button class="faq-toggle w-full flex items-center justify-between p-6 text-left"><span class="font-semibold pr-4">¿Cuánto cuesta una instalación solar para casa?</span><i data-lucide="plus" class="w-5 h-5 text-orange-500 flex-shrink-0 faq-icon transition-transform duration-300"></i></button><div class="faq-content px-6 pb-0"><p class="text-neutral-400 leading-relaxed pb-6">Entre 4.500€ y 8.000€ antes de subvenciones para 3-5 kWp. Con las ayudas actuales puede reducirse hasta un 40-50%.</p></div></div>
+                <div class="faq-item glass-card rounded-2xl overflow-hidden"><button class="faq-toggle w-full flex items-center justify-between p-6 text-left"><span class="font-semibold pr-4">¿Qué pasa cuando no hay sol?</span><i data-lucide="plus" class="w-5 h-5 text-orange-500 flex-shrink-0 faq-icon transition-transform duration-300"></i></button><div class="faq-content px-6 pb-0"><p class="text-neutral-400 leading-relaxed pb-6">Tu hogar sigue conectado a la red. Si tienes baterías, el exceso del día se almacena para la noche. También puedes compensar excedentes.</p></div></div>
+                <div class="faq-item glass-card rounded-2xl overflow-hidden"><button class="faq-toggle w-full flex items-center justify-between p-6 text-left"><span class="font-semibold pr-4">¿Cuánto tiempo dura la instalación?</span><i data-lucide="plus" class="w-5 h-5 text-orange-500 flex-shrink-0 faq-icon transition-transform duration-300"></i></button><div class="faq-content px-6 pb-0"><p class="text-neutral-400 leading-relaxed pb-6">La instalación física en 1-3 días. El proceso completo con trámites, entre 2 y 6 semanas.</p></div></div>
+                <div class="faq-item glass-card rounded-2xl overflow-hidden"><button class="faq-toggle w-full flex items-center justify-between p-6 text-left"><span class="font-semibold pr-4">¿Necesito permisos del ayuntamiento?</span><i data-lucide="plus" class="w-5 h-5 text-orange-500 flex-shrink-0 faq-icon transition-transform duration-300"></i></button><div class="faq-content px-6 pb-0"><p class="text-neutral-400 leading-relaxed pb-6">Sí, pero nos encargamos de toda la tramitación. La nueva ley simplifica enormemente los permisos.</p></div></div>
+                <div class="faq-item glass-card rounded-2xl overflow-hidden"><button class="faq-toggle w-full flex items-center justify-between p-6 text-left"><span class="font-semibold pr-4">¿Qué mantenimiento necesitan los paneles?</span><i data-lucide="plus" class="w-5 h-5 text-orange-500 flex-shrink-0 faq-icon transition-transform duration-300"></i></button><div class="faq-content px-6 pb-0"><p class="text-neutral-400 leading-relaxed pb-6">Muy poco. La lluvia los limpia en la mayoría de casos. Recomendamos una revisión anual. Los paneles superan los 25 años con más del 80% de rendimiento.</p></div></div>
+                <div class="faq-item glass-card rounded-2xl overflow-hidden"><button class="faq-toggle w-full flex items-center justify-between p-6 text-left"><span class="font-semibold pr-4">¿Puedo instalar solar si vivo en un piso?</span><i data-lucide="plus" class="w-5 h-5 text-orange-500 flex-shrink-0 faq-icon transition-transform duration-300"></i></button><div class="faq-content px-6 pb-0"><p class="text-neutral-400 leading-relaxed pb-6">Sí, mediante instalación compartida en comunidades de vecinos. La ley permite que varios vecinos se asocien para instalar paneles en zonas comunes.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACTO (escribe en Supabase) -->
+    <section id="contacto" class="relative bg-neutral-950 py-24 md:py-32 overflow-hidden">
+        <div class="absolute inset-0 solar-grid opacity-30"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 relative">
+            <div class="grid lg:grid-cols-12 gap-16">
+                <div class="lg:col-span-5 space-y-10">
+                    <div class="reveal">
+                        <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-6"><i data-lucide="mail" class="w-4 h-4 text-orange-500"></i><span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Contacto</span></div>
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight mb-6">¿Listo para<br>dar el <span class="text-orange-500">paso</span>?</h2>
+                        <p class="text-lg text-neutral-400 leading-relaxed">Solicita tu estudio solar gratuito. Te respondemos en menos de 24 horas.</p>
+                    </div>
+                    <div class="reveal space-y-6" style="transition-delay:100ms">
+                        <div class="flex items-center gap-4"><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="phone" class="w-5 h-5 text-orange-500"></i></div><div><div class="text-sm text-neutral-500">Llámanos</div><div class="font-semibold">900 123 456</div></div></div>
+                        <div class="flex items-center gap-4"><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="mail" class="w-5 h-5 text-orange-500"></i></div><div><div class="text-sm text-neutral-500">Email</div><div class="font-semibold">info@nexosolar.es</div></div></div>
+                        <div class="flex items-center gap-4"><div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="map-pin" class="w-5 h-5 text-orange-500"></i></div><div><div class="text-sm text-neutral-500">Oficina central</div><div class="font-semibold">Calle Solar 42, Madrid</div></div></div>
+                    </div>
+                    <div class="reveal glass-card rounded-2xl p-6" style="transition-delay:200ms">
+                        <h4 class="font-semibold mb-2 flex items-center gap-2"><i data-lucide="bell" class="w-4 h-4 text-orange-500"></i>Newsletter Solar</h4>
+                        <p class="text-sm text-neutral-400 mb-4">Novedades sobre subvenciones y consejos de ahorro.</p>
+                        <form id="newsletterForm" class="flex gap-2">
+                            <input type="email" id="newsletterEmail" required placeholder="tu@email.com" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 text-sm">
+                            <button type="submit" id="newsletterBtn" class="bg-orange-500 text-white font-medium px-4 py-2.5 rounded-xl hover:bg-orange-600 transition-colors flex items-center gap-1 text-sm flex-shrink-0">
+                                <span id="newsletterBtnText">Unirme</span>
+                                <svg id="newsletterSpinner" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                            </button>
+                        </form>
+                        <div id="newsletterMsg" class="mt-2 text-xs hidden"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7">
+                    <div class="reveal glass-card rounded-3xl p-8 md:p-10">
+                        <form id="contactForm" class="space-y-6" novalidate>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Nombre *</label><input type="text" name="nombre" required placeholder="Tu nombre" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"><p class="text-xs text-red-400 mt-1 hidden" data-error="nombre">Introduce tu nombre</p></div>
+                                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Teléfono *</label><input type="tel" name="telefono" required placeholder="600 000 000" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"><p class="text-xs text-red-400 mt-1 hidden" data-error="telefono">Introduce un teléfono válido</p></div>
+                            </div>
+                            <div><label class="block text-sm font-medium text-neutral-300 mb-2">Email *</label><input type="email" name="email" required placeholder="tu@email.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 transition-all"><p class="text-xs text-red-400 mt-1 hidden" data-error="email">Introduce un email válido</p></div>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Tipo de instalación</label><select name="tipo" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-orange-500/50 transition-all appearance-none cursor-pointer"><option value="" class="bg-neutral-900">Seleccionar...</option><option value="residencial" class="bg-neutral-900">Vivienda unifamiliar</option><option value="comunidad" class="bg-neutral-900">Comunidad de vecinos</option><option value="industrial" class="bg-neutral-900">Industrial / Nave</option><option value="bateria" class="bg-neutral-900">Solo batería</option><option value="ev" class="bg-neutral-900">Punto de recarga EV</option><option value="otro" class="bg-neutral-900">Otro</option></select></div>
+                                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Código Postal</label><input type="text" name="cp" placeholder="28001" maxlength="5" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 transition-all"></div>
+                            </div>
+                            <div><label class="block text-sm font-medium text-neutral-300 mb-2">Mensaje</label><textarea name="mensaje" rows="4" placeholder="Cuéntanos sobre tu proyecto..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 transition-all resize-none"></textarea></div>
+                            <div class="flex items-start gap-3"><input type="checkbox" id="privacy" required class="mt-1 accent-orange-500 w-4 h-4"><label for="privacy" class="text-sm text-neutral-400">Acepto la <a href="#" class="text-orange-500 hover:underline">política de privacidad</a> y el tratamiento de mis datos.</label></div>
+                            <p class="text-xs text-red-400 hidden" id="privacyError">Debes aceptar la política de privacidad</p>
+                            <button type="submit" class="btn-primary w-full bg-orange-500 text-white font-semibold text-lg py-4 rounded-full flex items-center justify-center gap-2" id="submitBtn">
+                                <span id="submitText">Solicitar Presupuesto Gratuito</span>
+                                <i data-lucide="arrow-right" class="w-5 h-5" id="submitArrow"></i>
+                                <svg id="submitSpinner" class="hidden animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="relative bg-orange-500 py-20 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-500"></div>
+        <div class="absolute inset-0 opacity-10" style="background-image:linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px);background-size:40px 40px"></div>
+        <div class="max-w-4xl mx-auto px-6 lg:px-12 text-center relative">
+            <h2 class="text-3xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-tight mb-6 text-white">El sol no te cobra.<br>¿Por qué seguir pagando?</h2>
+            <p class="text-lg text-white/80 max-w-xl mx-auto mb-8 leading-relaxed">Cada día sin paneles solares es dinero que podrías estar ahorrando.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#contacto" class="bg-white text-orange-600 font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-2 hover:scale-105 transition-transform shadow-2xl">Estudio Gratuito <i data-lucide="arrow-right" class="w-5 h-5"></i></a>
+                <a href="tel:900123456" class="border-2 border-white/40 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-2 hover:bg-white/10 transition-all"><i data-lucide="phone" class="w-5 h-5"></i> 900 123 456</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-neutral-950 border-t border-white/5 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div class="space-y-5">
+                    <a href="#hero" class="flex items-center gap-2"><div class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center"><i data-lucide="sun" class="w-5 h-5 text-white"></i></div><span class="text-xl font-semibold tracking-tight">Nexo<span class="text-orange-500">Solar</span></span></a>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Empresa líder en instalaciones solares en España. Más de 15 años transformando el consumo energético.</p>
+                    <div class="flex items-center gap-2"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div><span class="text-xs text-neutral-500">Operando en toda España</span></div>
+                </div>
+                <div><h4 class="text-sm font-semibold uppercase tracking-wider text-neutral-300 mb-5">Servicios</h4><ul class="space-y-3"><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Solar Residencial</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Solar Industrial</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Almacenamiento</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Punto de Recarga EV</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Mantenimiento</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Subvenciones</a></li></ul></div>
+                <div><h4 class="text-sm font-semibold uppercase tracking-wider text-neutral-300 mb-5">Empresa</h4><ul class="space-y-3"><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Sobre Nosotros</a></li><li><a href="#proyectos" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Proyectos</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Trabaja con Nosotros</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Blog</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Aviso Legal</a></li><li><a href="#" class="text-sm text-neutral-500 hover:text-orange-500 transition-colors">Política de Privacidad</a></li></ul></div>
+                <div><h4 class="text-sm font-semibold uppercase tracking-wider text-neutral-300 mb-5">Contacto</h4><ul class="space-y-3"><li class="flex items-center gap-2 text-sm text-neutral-500"><i data-lucide="phone" class="w-4 h-4 text-orange-500/60"></i>900 123 456</li><li class="flex items-center gap-2 text-sm text-neutral-500"><i data-lucide="mail" class="w-4 h-4 text-orange-500/60"></i>info@nexosolar.es</li><li class="flex items-start gap-2 text-sm text-neutral-500"><i data-lucide="map-pin" class="w-4 h-4 text-orange-500/60 mt-0.5"></i>Calle Solar 42, 28001 Madrid</li><li class="flex items-center gap-2 text-sm text-neutral-500"><i data-lucide="clock" class="w-4 h-4 text-orange-500/60"></i>L-V: 9:00 - 19:00</li></ul></div>
+            </div>
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-xs text-neutral-600">© 2024 Nexo Solar. Todos los derechos reservados.</p>
+                <div class="flex items-center gap-6">
+                    <span class="text-xs text-neutral-600 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-green-500" id="footerDbDot"></span> Powered by Supabase</span>
+                    <div class="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-green-500"></i><span class="text-xs text-neutral-400">ISO 9001:2015</span></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================== JAVASCRIPT ===================== -->
+    <script>
+    // ===================================================
+    // ⚡ SUPABASE — TUS CREDENCIALES
+    // ===================================================
+    const SUPABASE_URL  = 'https://dfgwlboeebxfpfhfuvip.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZ3dsYm9lZWJ4ZnBwaGZ1dmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMDczOTgsImV4cCI6MjA5ODU4MzM5OH0.5Dm8JqFRntvPi4Jf-0a4bU8SRpPRThXW52wm_QNiQiI';
+
+    let supabase = null;
+    let dbConnected = false;
+
+    // ===================================================
+    // INICIALIZAR
+    // ===================================================
+    function initSupabase() {
+        try {
+            if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                testConnection();
+            } else {
+                console.warn('Supabase JS no cargó.');
+                setDbStatus(false, 'Sin DB');
+                loadFallbackData();
+            }
+        } catch (err) {
+            console.error('Error init Supabase:', err);
+            setDbStatus(false, 'Error');
+            loadFallbackData();
+        }
     }
-    window.addShippingZone = async function() { const name = document.getElementById('sz_name').value.trim(); const cost = Number(document.getElementById('sz_cost').value) || 0; if (!name) { showToast('Escribe el nombre del municipio', 'error'); return; } storeData.shippingZones.push({ name, cost }); try { await saveData(); showToast('Municipio añadido', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {} }
-    window.removeShippingZone = async function(index) { storeData.shippingZones.splice(index, 1); try { await saveData(); showToast('Municipio eliminado', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {} }
-    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; try { await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); } catch(e) {} };
 
-    window.closeAllModals = closeAllModals; window.switchScreen = switchScreen; window.handleAdminClick = handleAdminClick;
+    async function testConnection() {
+        try {
+            const { data, error } = await supabase.from('testimonios').select('id').limit(1);
+            if (error) throw error;
+            dbConnected = true;
+            setDbStatus(true, 'DB OK');
+            loadDynamicData();
+        } catch (err) {
+            console.warn('No se pudo conectar a Supabase:', err.message);
+            dbConnected = false;
+            setDbStatus(false, 'Offline');
+            loadFallbackData();
+        }
+    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initAuth(); initDatabase();
-      document.getElementById('loginBtn').addEventListener('click', handleLogin);
-      document.getElementById('adminLogout').addEventListener('click', handleLogout);
-      document.getElementById('sendWhatsapp').addEventListener('click', sendWhatsappOrder);
-      document.querySelectorAll('.modal-overlay').forEach(o => { o.addEventListener('click', function(e) { if (e.target === o) closeAllModals(); }); });
-      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.closeLightbox(); });
+    function setDbStatus(ok, label) {
+        const dot = document.getElementById('dbDot');
+        const lbl = document.getElementById('dbLabel');
+        const fdot = document.getElementById('footerDbDot');
+        if (dot) { dot.className = `w-2 h-2 rounded-full ${ok ? 'bg-green-500 animate-pulse' : 'bg-neutral-600'}`; }
+        if (lbl) { lbl.textContent = label; lbl.className = `text-[10px] uppercase tracking-wider ${ok ? 'text-green-500' : 'text-neutral-600'}`; }
+        if (fdot) { fdot.className = `w-1.5 h-1.5 rounded-full ${ok ? 'bg-green-500' : 'bg-neutral-600'}`; }
+    }
+
+    // ===================================================
+    // CARGAR DATOS DINÁMICOS
+    // ===================================================
+    async function loadDynamicData() {
+        loadTestimoniosFromDB();
+        loadProyectosFromDB();
+    }
+
+    async function loadTestimoniosFromDB() {
+        const sk = document.getElementById('testimoniosSkeleton');
+        const grid = document.getElementById('testimoniosGrid');
+        try {
+            const { data, error } = await supabase.from('testimonios').select('*').eq('activo', true).order('orden', { ascending: true });
+            if (error) throw error;
+            sk.classList.add('hidden');
+            grid.classList.remove('hidden');
+            grid.innerHTML = data.map(renderTestimonio).join('');
+        } catch (e) { console.warn('Error testimonios DB:', e.message); loadTestimoniosFallback(); }
+    }
+
+    function renderTestimonio(t) {
+        const cm = { orange:'from-orange-500 to-orange-600', blue:'from-blue-500 to-blue-600', green:'from-green-500 to-green-600' };
+        const stars = Array(t.valoracion||5).fill('<svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>').join('');
+        return `<div class="card-hover glass-card rounded-3xl p-8"><div class="flex gap-1 mb-5">${stars}</div><p class="text-neutral-300 leading-relaxed mb-6">"${t.testimonio}"</p><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-full bg-gradient-to-br ${cm[t.color_avatar]||cm.orange} flex items-center justify-center text-sm font-semibold">${t.iniciales}</div><div><div class="text-sm font-semibold">${t.nombre}</div><div class="text-xs text-neutral-500">${t.ubicacion}</div></div></div></div>`;
+    }
+
+    function loadTestimoniosFallback() {
+        document.getElementById('testimoniosSkeleton').classList.add('hidden');
+        const fb = document.getElementById('testimoniosFallback'); fb.classList.remove('hidden');
+        fb.innerHTML = [
+            { nombre:'María García', iniciales:'MG', ubicacion:'Madrid · 5.2 kWp', testimonio:'Desde que instalamos los paneles, nuestra factura se ha reducido un 75%. El proceso fue increíblemente sencillo.', color:'orange' },
+            { nombre:'Javier López', iniciales:'JL', ubicacion:'Guadalajara · 150 kWp', testimonio:'El retorno de inversión fue de solo 3 años. La monitorización me permite controlar todo desde el móvil.', color:'blue' },
+            { nombre:'Carmen Ruiz', iniciales:'CR', ubicacion:'Valencia · 12 kWp', testimonio:'Nexo Solar gestionó las subvenciones y ahora cada vecino ahorra €65 al mes. Un acierto total.', color:'green' }
+        ].map(t => renderTestimonio(t)).join('');
+    }
+
+    async function loadProyectosFromDB() {
+        const sk = document.getElementById('proyectosSkeleton');
+        const grid = document.getElementById('proyectosGrid');
+        try {
+            const { data, error } = await supabase.from('proyectos').select('*').eq('activo', true).order('orden', { ascending: true });
+            if (error) throw error;
+            sk.classList.add('hidden');
+            grid.classList.remove('hidden');
+            grid.innerHTML = data.map(renderProyecto).join('');
+        } catch (e) { console.warn('Error proyectos DB:', e.message); loadProyectosFallback(); }
+    }
+
+    function renderProyecto(p) {
+        const w = p.estilo_badge === 'white';
+        return `<div class="card-hover group cursor-pointer"><div class="relative rounded-3xl overflow-hidden mb-5"><img src="${p.imagen_url}" alt="${p.titulo}" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy"><div class="absolute inset-0 bg-gradient-to-t from-neutral-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div><div class="absolute top-4 right-4 ${w?'bg-white text-neutral-900':'bg-orange-500 text-white'} text-xs font-semibold px-3 py-1.5 rounded-full">${p.categoria}</div></div><h3 class="text-lg font-semibold mb-1">${p.titulo}</h3><p class="text-sm text-neutral-400">${p.descripcion}</p></div>`;
+    }
+
+    function loadProyectosFallback() {
+        document.getElementById('proyectosSkeleton').classList.add('hidden');
+        const fb = document.getElementById('proyectosFallback'); fb.classList.remove('hidden');
+        fb.innerHTML = [
+            { titulo:'Chalet en Pozuelo', descripcion:'6.4 kWp · 16 paneles · €280/mes', categoria:'Residencial', estilo_badge:'orange', imagen_url:'https://picsum.photos/seed/solar-house-modern/600/400.jpg' },
+            { titulo:'Nave en Guadalajara', descripcion:'150 kWp · 375 paneles · €3.200/mes', categoria:'Industrial', estilo_badge:'white', imagen_url:'https://picsum.photos/seed/solar-warehouse-industrial/600/400.jpg' },
+            { titulo:'Comunidad Valencia', descripcion:'12 kWp · 30 paneles · €65/familia', categoria:'Comunidad', estilo_badge:'orange', imagen_url:'https://picsum.photos/seed/solar-apartments-community/600/400.jpg' },
+            { titulo:'Finca en Sevilla', descripcion:'10 kWp · 25 paneles + batería', categoria:'Rural', estilo_badge:'orange', imagen_url:'https://picsum.photos/seed/solar-farm-countryside/600/400.jpg' },
+            { titulo:'Oficinas Bilbao', descripcion:'45 kWp · 112 paneles · ROI 3.2a', categoria:'Oficinas', estilo_badge:'white', imagen_url:'https://picsum.photos/seed/solar-office-building/600/400.jpg' },
+            { titulo:'Carport Málaga', descripcion:'20 kWp · 4 cargadores EV', categoria:'Carport + EV', estilo_badge:'orange', imagen_url:'https://picsum.photos/seed/solar-carport-ev/600/400.jpg' }
+        ].map(p => renderProyecto(p)).join('');
+    }
+
+    function loadFallbackData() { loadTestimoniosFallback(); loadProyectosFallback(); }
+
+    // ===================================================
+    // ESCRIBIR EN SUPABASE
+    // ===================================================
+    async function saveContacto(d) {
+        if (!dbConnected || !supabase) return false;
+        const { error } = await supabase.from('contactos').insert({
+            nombre: d.nombre, telefono: d.telefono, email: d.email,
+            tipo_instalacion: d.tipo || null, codigo_postal: d.cp || null,
+            mensaje: d.mensaje || null, user_agent: navigator.userAgent
+        });
+        if (error) { console.error('Error contacto:', error); return false; }
+        return true;
+    }
+
+    async function saveCalculadoraData(d) {
+        if (!dbConnected || !supabase) return false;
+        const email = document.getElementById('calcEmail').value.trim();
+        const { error } = await supabase.from('sesiones_calculadora').insert({
+            factura_mensual: d.bill, superficie_tejado: d.roof,
+            orientacion: d.orientation, paneles_recomendados: d.panels,
+            potencia_kwp: parseFloat(d.kw), ahorro_anual: d.savings,
+            payback_anios: parseFloat(d.payback), email_opcional: email || null
+        });
+        if (error) { console.error('Error calc:', error); return false; }
+        return true;
+    }
+
+    async function saveNewsletter(email) {
+        if (!dbConnected || !supabase) return { success:false, msg:'Sin conexión a base de datos' };
+        const { error } = await supabase.from('newsletter').upsert({ email }, { onConflict:'email' });
+        if (error) {
+            if (error.code === '23505') return { success:false, msg:'Este email ya está suscrito.' };
+            return { success:false, msg:'Error al suscribirse.' };
+        }
+        return { success:true, msg:'¡Suscrito correctamente!' };
+    }
+
+    // ===================================================
+    // TOASTS
+    // ===================================================
+    function showToast(type, title, msg) {
+        const t = document.getElementById(type==='success'?'toastSuccess':'toastError');
+        document.getElementById(type==='success'?'toastSuccessTitle':'toastErrorTitle').textContent = title;
+        document.getElementById(type==='success'?'toastSuccessMsg':'toastErrorMsg').textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+    }
+
+    // ===================================================
+    // INIT LUCIDE
+    // ===================================================
+    lucide.createIcons();
+
+    // ===================================================
+    // MOBILE MENU
+    // ===================================================
+    document.getElementById('menuToggle').addEventListener('click', () => {
+        document.getElementById('mobileMenu').classList.add('open');
+        document.body.style.overflow = 'hidden';
     });
-  </script>
+    document.getElementById('menuClose').addEventListener('click', () => {
+        document.getElementById('mobileMenu').classList.remove('open');
+        document.body.style.overflow = '';
+    });
+    document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => {
+        document.getElementById('mobileMenu').classList.remove('open');
+        document.body.style.overflow = '';
+    }));
+
+    // ===================================================
+    // SCROLL REVEAL
+    // ===================================================
+    const ro = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); }), { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+    // ===================================================
+    // COUNTERS
+    // ===================================================
+    const co = new IntersectionObserver(es => es.forEach(e => {
+        if(e.isIntersecting) {
+            const t = parseInt(e.target.dataset.count); let c = 0; const inc = t/60;
+            const timer = setInterval(() => {
+                c += inc; if(c >= t) { c = t; clearInterval(timer); }
+                let txt = Math.floor(c).toLocaleString('es-ES');
+                if(t===98) txt+='%'; if(t===2500) txt+='+'; if(t===15) txt+='+';
+                e.target.textContent = txt;
+            }, 30);
+            co.unobserve(e.target);
+        }
+    }), { threshold:0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => co.observe(el));
+
+    // ===================================================
+    // CALCULADORA
+    // ===================================================
+    const billSlider = document.getElementById('billSlider');
+    const roofSlider = document.getElementById('roofSlider');
+    let orientationFactor = 1.0;
+    let calcData = {};
+
+    document.querySelectorAll('.orientation-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.orientation-btn').forEach(b => {
+                b.classList.remove('active','bg-orange-500/20','border-orange-500/40','text-orange-400');
+                b.classList.add('bg-white/5','border-white/10','text-neutral-400');
+            });
+            btn.classList.add('active','bg-orange-500/20','border-orange-500/40','text-orange-400');
+            btn.classList.remove('bg-white/5','border-white/10','text-neutral-400');
+            orientationFactor = btn.dataset.value==='sur'?1:btn.dataset.value==='este'?0.85:0.82;
+            updateCalc();
+        });
+    });
+
+    function updateCalc() {
+        const bill = +billSlider.value, roof = +roofSlider.value;
+        document.getElementById('billValue').textContent = `€${bill}`;
+        document.getElementById('roofValue').textContent = `${roof} m²`;
+        const panels = Math.max(2, Math.min(Math.floor(roof/2), Math.ceil(bill/18)));
+        const kw = (panels*0.4).toFixed(1);
+        const savings = Math.round(bill*12*0.7*orientationFactor);
+        const payback = (panels*850/savings).toFixed(1);
+        document.getElementById('panelCount').textContent = panels;
+        document.getElementById('annualSavings').textContent = `€${savings.toLocaleString('es-ES')}`;
+        document.getElementById('powerKw').textContent = `${kw} kWp`;
+        document.getElementById('payback').textContent = `${payback} años`;
+        calcData = { bill, roof, orientation: document.querySelector('.orientation-btn.active')?.dataset.value||'sur', panels, kw, savings, payback };
+    }
+
+    billSlider.addEventListener('input', updateCalc);
+    roofSlider.addEventListener('input', updateCalc);
+    updateCalc();
+
+    document.getElementById('saveCalcBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveCalcBtn');
+        document.getElementById('saveCalcText').textContent = 'Guardando...';
+        document.getElementById('saveCalcArrow').classList.add('hidden');
+        document.getElementById('saveCalcSpinner').classList.remove('hidden');
+        btn.disabled = true; btn.style.opacity = '0.7';
+
+        const saved = await saveCalculadoraData(calcData);
+
+        document.getElementById('saveCalcText').textContent = 'Guardar resultado y solicitar estudio';
+        document.getElementById('saveCalcArrow').classList.remove('hidden');
+        document.getElementById('saveCalcSpinner').classList.add('hidden');
+        btn.disabled = false; btn.style.opacity = '1';
+
+        if(saved) showToast('success','¡Resultado guardado!','Te enviaremos un estudio detallado si dejaste tu email.');
+        else if(!dbConnected) showToast('success','¡Cálculo realizado!','Conecta Supabase para guardar resultados.');
+        else showToast('error','Error','No se pudo guardar.');
+    });
+
+    // ===================================================
+    // FAQ
+    // ===================================================
+    document.querySelectorAll('.faq-toggle').forEach(tog => {
+        tog.addEventListener('click', () => {
+            const item = tog.parentElement, content = item.querySelector('.faq-content'), icon = tog.querySelector('.faq-icon');
+            const open = content.classList.contains('open');
+            document.querySelectorAll('.faq-content').forEach(c => c.classList.remove('open'));
+            document.querySelectorAll('.faq-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+            if(!open) { content.classList.add('open'); icon.style.transform = 'rotate(45deg)'; }
+        });
+    });
+
+    // ===================================================
+    // CONTACT FORM → SUPABASE
+    // ===================================================
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        document.querySelectorAll('[data-error]').forEach(el => el.classList.add('hidden'));
+        document.getElementById('privacyError').classList.add('hidden');
+
+        const fd = new FormData(e.target);
+        const d = Object.fromEntries(fd.entries());
+        let err = false;
+
+        if(!d.nombre || d.nombre.trim().length < 2) { document.querySelector('[data-error="nombre"]').classList.remove('hidden'); err = true; }
+        if(!d.telefono || d.telefono.replace(/\s/g,'').length < 6) { document.querySelector('[data-error="telefono"]').classList.remove('hidden'); err = true; }
+        if(!d.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) { document.querySelector('[data-error="email"]').classList.remove('hidden'); err = true; }
+        if(!document.getElementById('privacy').checked) { document.getElementById('privacyError').classList.remove('hidden'); err = true; }
+        if(err) return;
+
+        document.getElementById('submitText').textContent = 'Enviando...';
+        document.getElementById('submitArrow').classList.add('hidden');
+        document.getElementById('submitSpinner').classList.remove('hidden');
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').style.opacity = '0.7';
+
+        const saved = await saveContacto(d);
+
+        document.getElementById('submitText').textContent = 'Solicitar Presupuesto Gratuito';
+        document.getElementById('submitArrow').classList.remove('hidden');
+        document.getElementById('submitSpinner').classList.add('hidden');
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').style.opacity = '1';
+
+        if(saved) { e.target.reset(); showToast('success','¡Mensaje enviado!','Te contactaremos en menos de 24 horas.'); }
+        else if(!dbConnected) { e.target.reset(); showToast('success','¡Recibido!','Conecta Supabase para guardar en base de datos.'); }
+        else showToast('error','Error al enviar','Inténtalo de nuevo.');
+    });
+
+    // ===================================================
+    // NEWSLETTER → SUPABASE
+    // ===================================================
+    document.getElementById('newsletterForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const inp = document.getElementById('newsletterEmail');
+        const msg = document.getElementById('newsletterMsg');
+        const email = inp.value.trim();
+        if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            msg.textContent = 'Introduce un email válido.'; msg.className = 'mt-2 text-xs text-red-400'; msg.classList.remove('hidden'); return;
+        }
+        document.getElementById('newsletterBtnText').textContent = '...';
+        document.getElementById('newsletterSpinner').classList.remove('hidden');
+        document.getElementById('newsletterBtn').disabled = true;
+
+        const r = await saveNewsletter(email);
+
+        document.getElementById('newsletterBtnText').textContent = 'Unirme';
+        document.getElementById('newsletterSpinner').classList.add('hidden');
+        document.getElementById('newsletterBtn').disabled = false;
+
+        msg.textContent = r.msg;
+        msg.className = `mt-2 text-xs ${r.success?'text-green-400':'text-orange-400'}`;
+        msg.classList.remove('hidden');
+        if(r.success) { inp.value = ''; setTimeout(() => msg.classList.add('hidden'), 4000); }
+    });
+
+    // ===================================================
+    // SMOOTH SCROLL
+    // ===================================================
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function(e) {
+            e.preventDefault();
+            const t = document.querySelector(this.getAttribute('href'));
+            if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 80, behavior:'smooth' });
+        });
+    });
+
+    // ===================================================
+    // GO
+    // ===================================================
+    initSupabase();
+    </script>
 </body>
   </html>
