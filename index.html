@@ -1,658 +1,352 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>José Catálogo Eléctrico — Material Eléctrico Profesional</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        orange: { 450: '#FF5A1F', 500: '#F74E09', 600: '#D93D00' },
-                        neutral: { 850: '#1a1a1a', 900: '#0a0a0a', 950: '#050505' }
-                    },
-                    animation: { 'spin-slow': 'spin-slow 12s linear infinite' }
-                }
-            }
-        }
-    </script>
-    <style>
-        *{font-family:'Inter',sans-serif}
-        html{scroll-behavior:smooth}
-        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
-        @keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-        @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(247,78,9,.2)}50%{box-shadow:0 0 40px rgba(247,78,9,.4)}}
-        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
-        @keyframes slideOut{from{transform:translateX(0)}to{transform:translateX(100%)}}
-        .animate-fade-in-up{animation:fadeInUp .8s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
-        .animate-float{animation:float 6s ease-in-out infinite}
-        .animate-pulse-glow{animation:pulse-glow 3s ease-in-out infinite}
-        .delay-100{animation-delay:100ms}.delay-200{animation-delay:200ms}.delay-300{animation-delay:300ms}.delay-400{animation-delay:400ms}
-        .reveal{opacity:0;transform:translateY(30px);transition:all .8s cubic-bezier(.16,1,.3,1)}
-        .reveal.active{opacity:1;transform:translateY(0)}
-        .gradient-text{background:linear-gradient(to right,#fff,#a3a3a3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .glass-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
-        .solar-grid{background-image:linear-gradient(rgba(247,78,9,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(247,78,9,.05) 1px,transparent 1px);background-size:60px 60px}
-        .text-shadow-hero{text-shadow:0 4px 40px rgba(0,0,0,.5)}
-        .btn-primary{transition:all .15s ease}
-        .btn-primary:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(247,78,9,.4)}
-        .nav-blur{background:rgba(10,10,10,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-        .hero-gradient{background:radial-gradient(ellipse at 70% 50%,rgba(247,78,9,.12) 0%,transparent 60%),radial-gradient(ellipse at 30% 80%,rgba(247,78,9,.06) 0%,transparent 50%)}
-        .card-product{transition:all .4s cubic-bezier(.175,.885,.32,1.275)}
-        .card-product:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 60px rgba(247,78,9,.1)}
-        .cart-drawer{transition:transform .35s cubic-bezier(.16,1,.3,1)}
-        .cart-drawer.open{transform:translateX(0)}
-        .cart-drawer.closed{transform:translateX(100%)}
-        .cart-overlay{transition:opacity .3s ease}
-        .toast{transform:translateX(120%);transition:transform .4s cubic-bezier(.16,1,.3,1)}
-        .toast.show{transform:translateX(0)}
-        .skeleton{background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.05) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:1rem}
-        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-        .price-tag{background:linear-gradient(135deg,#F74E09,#D93D00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .badge-discount{background:linear-gradient(135deg,#ef4444,#dc2626)}
-        .cat-link{position:relative}
-        .cat-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:#F74E09;transition:width .3s ease}
-        .cat-link:hover::after,.cat-link.active::after{width:100%}
-        .admin-btn{opacity:.3;transition:opacity .3s ease}
-        .admin-btn:hover{opacity:1}
-        /* Admin modal */
-        .admin-modal{transition:opacity .3s ease}
-        .admin-modal.hidden{opacity:0;pointer-events:none}
-        .admin-modal.visible{opacity:1;pointer-events:auto}
-        @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-        .marquee-track{animation:marquee 25s linear infinite}
-        input[type="range"]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:rgba(255,255,255,.1);outline:none}
-        input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:#F74E09;cursor:pointer;box-shadow:0 0 10px rgba(247,78,9,.5)}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>José Catálogo Eléctrico</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config={theme:{extend:{
+colors:{
+brand:{50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a',950:'#172554'},
+accent:{400:'#facc15',500:'#eab308',600:'#ca8a04'},
+dark:{800:'#1a1a2e',900:'#0f0f23',950:'#0a0a1a'}
+},
+animation:{'spin-slow':'spin-slow 12s linear infinite','float':'float 6s ease-in-out infinite','pulse-glow':'pulse-glow 3s ease-in-out infinite'}
+}}}
+</script>
+<style>
+*{font-family:'Inter',sans-serif}html{scroll-behavior:smooth}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+@keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(59,130,246,.2)}50%{box-shadow:0 0 40px rgba(59,130,246,.4)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.animate-fade-in-up{animation:fadeInUp .8s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
+.delay-100{animation-delay:100ms}.delay-200{animation-delay:200ms}.delay-300{animation-delay:300ms}.delay-400{animation-delay:400ms}
+.reveal{opacity:0;transform:translateY(30px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.reveal.active{opacity:1;transform:translateY(0)}
+.gradient-text{background:linear-gradient(to right,#fff,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.glass-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(12px)}
+.grid-bg{background-image:linear-gradient(rgba(59,130,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.03) 1px,transparent 1px);background-size:60px 60px}
+.text-shadow-hero{text-shadow:0 4px 40px rgba(0,0,0,.5)}
+.btn-primary{transition:all .15s ease}.btn-primary:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(59,130,246,.4)}
+.nav-blur{background:rgba(15,15,35,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hero-gradient{background:radial-gradient(ellipse at 70% 50%,rgba(59,130,246,.1) 0%,transparent 60%),radial-gradient(ellipse at 30% 80%,rgba(59,130,246,.05) 0%,transparent 50%)}
+.card-product{transition:all .4s cubic-bezier(.175,.885,.32,1.275)}
+.card-product:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 60px rgba(59,130,246,.08)}
+.cart-drawer{transition:transform .35s cubic-bezier(.16,1,.3,1)}.cart-drawer.open{transform:translateX(0)}.cart-drawer.closed{transform:translateX(100%)}
+.toast{transform:translateX(120%);transition:transform .4s cubic-bezier(.16,1,.3,1)}.toast.show{transform:translateX(0)}
+.skeleton{background:linear-gradient(90deg,rgba(255,255,255,.03) 25%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.03) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:1rem}
+.price-tag{background:linear-gradient(135deg,#3b82f6,#1d4ed8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge-discount{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.cat-link{position:relative}.cat-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:#3b82f6;transition:width .3s}.cat-link:hover::after,.cat-link.active::after{width:100%}
+.admin-btn{opacity:.2;transition:opacity .3s}.admin-btn:hover{opacity:1}.admin-btn.logged{opacity:1}
+.modal-fade{transition:opacity .3s}.modal-fade.hidden{opacity:0;pointer-events:none}.modal-fade.visible{opacity:1;pointer-events:auto}
+.notes-box{max-height:0;overflow:hidden;transition:max-height .3s ease}.notes-box.open{max-height:300px}
+.upload-zone{border:2px dashed rgba(255,255,255,.12);transition:all .2s}.upload-zone:hover{border-color:#3b82f6;background:rgba(59,130,246,.05)}
+.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.emoji-opt{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:18px;transition:all .15s}.emoji-opt:hover{background:rgba(255,255,255,.1);transform:scale(1.2)}.emoji-opt.selected{background:rgba(59,130,246,.3);outline:2px solid #3b82f6}
+.tab-btn{transition:all .2s}.tab-btn.active{background:rgba(59,130,246,.15);color:#60a5fa;border-color:rgba(59,130,246,.3)}
+.form-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 16px;color:#fff;font-size:14px;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:rgba(59,130,246,.5)}
+.form-input::placeholder{color:#404060}
+select.form-input{appearance:none;cursor:pointer}
+textarea.form-input{resize:vertical;min-height:60px}
+.logo-img{height:42px;width:auto;object-fit:contain}
+.logo-img-sm{height:32px;width:auto;object-fit:contain}
+.logo-img-footer{height:36px;width:auto;object-fit:contain;filter:brightness(0.9)}
+</style>
 </head>
-<body class="bg-neutral-900 text-white antialiased overflow-x-hidden">
+<body class="bg-dark-900 text-white antialiased overflow-x-hidden">
 
-    <!-- Toast -->
-    <div id="toast" class="toast fixed bottom-6 right-6 z-[80] bg-green-500/90 backdrop-blur-lg text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-        <div><div class="font-semibold text-sm" id="toastTitle">Añadido al carrito</div><div class="text-xs text-white/80" id="toastMsg">Panel LED 60x60</div></div>
-    </div>
+<!-- Toast -->
+<div id="toast" class="toast fixed bottom-6 right-6 z-[90] bg-green-500/90 backdrop-blur-lg text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
+<svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+<div><div class="font-semibold text-sm" id="toastTitle">OK</div><div class="text-xs text-white/80" id="toastMsg"></div></div>
+</div>
 
-    <!-- Cart Overlay -->
-    <div id="cartOverlay" class="cart-overlay fixed inset-0 bg-black/60 z-[60] hidden" onclick="toggleCart()"></div>
+<!-- Cart Overlay -->
+<div id="cartOverlay" class="fixed inset-0 bg-black/60 z-[60] hidden" onclick="toggleCart()"></div>
 
-    <!-- Cart Drawer -->
-    <div id="cartDrawer" class="cart-drawer closed fixed top-0 right-0 h-full w-full max-w-md bg-neutral-950 border-l border-white/10 z-[70] flex flex-col">
-        <div class="flex items-center justify-between p-6 border-b border-white/10">
-            <h3 class="text-lg font-semibold flex items-center gap-2"><svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg> Tu Carrito (<span id="cartCountDrawer">0</span>)</h3>
-            <button onclick="toggleCart()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-        </div>
-        <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
-        <div id="cartFooter" class="border-t border-white/10 p-6 space-y-4 hidden">
-            <div class="flex justify-between text-lg font-semibold"><span>Total</span><span id="cartTotal" class="price-tag">€0,00</span></div>
-            <button onclick="openCheckout()" class="btn-primary w-full bg-orange-500 text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2">Finalizar Pedido <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></button>
-        </div>
-        <div id="cartEmpty" class="flex-1 flex flex-col items-center justify-center p-6 text-center">
-            <svg class="w-16 h-16 text-neutral-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
-            <p class="text-neutral-500 font-medium">Tu carrito está vacío</p>
-            <p class="text-neutral-600 text-sm mt-1">Añade productos desde el catálogo</p>
-        </div>
-    </div>
+<!-- Cart Drawer -->
+<div id="cartDrawer" class="cart-drawer closed fixed top-0 right-0 h-full w-full max-w-md bg-dark-950 border-l border-white/5 z-[70] flex flex-col">
+<div class="flex items-center justify-between p-6 border-b border-white/5">
+<h3 class="text-lg font-semibold flex items-center gap-2">🛒 Carrito (<span id="cartCountDrawer">0</span>)</h3>
+<button onclick="toggleCart()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5 text-lg">✕</button>
+</div>
+<div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+<div id="cartFooter" class="border-t border-white/5 p-6 space-y-4 hidden">
+<div class="flex justify-between text-sm text-neutral-400"><span>Subtotal</span><span id="cartSubtotal">€0</span></div>
+<div class="flex justify-between text-sm text-neutral-400"><span>Envío</span><span id="cartShipping">—</span></div>
+<div class="flex justify-between text-lg font-semibold border-t border-white/5 pt-3"><span>Total</span><span id="cartTotal" class="price-tag">€0</span></div>
+<button onclick="openCheckout()" class="btn-primary w-full bg-brand-500 text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2">Finalizar Pedido →</button>
+</div>
+<div id="cartEmpty" class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+<div class="text-5xl mb-4 opacity-20">🛒</div>
+<p class="text-neutral-500 font-medium">Tu carrito está vacío</p>
+</div>
+</div>
 
-    <!-- Checkout Modal -->
-    <div id="checkoutModal" class="admin-modal hidden fixed inset-0 z-[80] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70" onclick="closeCheckout()"></div>
-        <div class="relative bg-neutral-900 border border-white/10 rounded-3xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <button onclick="closeCheckout()" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-            <h3 class="text-2xl font-semibold mb-6">Finalizar Pedido</h3>
-            <form id="checkoutForm" class="space-y-5" novalidate>
-                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Nombre completo *</label><input type="text" id="ckName" required placeholder="Tu nombre" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 transition-all"></div>
-                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Teléfono *</label><input type="tel" id="ckPhone" required placeholder="600 000 000" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 transition-all"></div>
-                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Email</label><input type="email" id="ckEmail" placeholder="tu@email.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 transition-all"></div>
-                <div><label class="block text-sm font-medium text-neutral-300 mb-2">Notas (opcional)</label><textarea id="ckNotes" rows="3" placeholder="Dirección de envío, horario preferido..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-orange-500/50 transition-all resize-none"></textarea></div>
-                <div class="bg-white/5 rounded-xl p-4 flex justify-between items-center"><span class="text-neutral-400">Total del pedido</span><span class="text-2xl font-bold price-tag" id="ckTotal">€0,00</span></div>
-                <button type="submit" class="btn-primary w-full bg-orange-500 text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2" id="ckSubmitBtn"><span id="ckSubmitText">Confirmar Pedido</span><svg id="ckSpinner" class="hidden animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg></button>
-            </form>
-        </div>
-    </div>
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="modal-fade hidden fixed inset-0 z-[80] flex items-center justify-center p-4">
+<div class="absolute inset-0 bg-black/70" onclick="closeCheckout()"></div>
+<div class="relative bg-dark-900 border border-white/5 rounded-3xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+<button onclick="closeCheckout()" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5">✕</button>
+<h3 class="text-2xl font-semibold mb-6">Finalizar Pedido</h3>
+<form id="checkoutForm" class="space-y-4" novalidate>
+<div><label class="block text-sm font-medium text-neutral-300 mb-1">Nombre *</label><input type="text" id="ckName" required placeholder="Tu nombre" class="form-input"></div>
+<div><label class="block text-sm font-medium text-neutral-300 mb-1">Teléfono *</label><input type="tel" id="ckPhone" required placeholder="600 000 000" class="form-input"></div>
+<div><label class="block text-sm font-medium text-neutral-300 mb-1">Email</label><input type="email" id="ckEmail" placeholder="tu@email.com" class="form-input"></div>
+<div><label class="block text-sm font-medium text-neutral-300 mb-1">Municipio de envío *</label><select id="ckMunicipio" required class="form-input"><option value="">Seleccionar municipio...</option></select></div>
+<div id="ckShippingInfo" class="hidden bg-white/5 rounded-xl p-3 text-sm flex justify-between"><span class="text-neutral-400">Costo de envío:</span><span id="ckShippingCost" class="font-semibold text-brand-400"></span></div>
+<div><label class="block text-sm font-medium text-neutral-300 mb-1">Dirección / Notas</label><textarea id="ckNotes" rows="2" placeholder="Calle, número, piso..." class="form-input"></textarea></div>
+<div class="bg-white/5 rounded-xl p-4 flex justify-between items-center"><span class="text-neutral-400">Total</span><span class="text-2xl font-bold price-tag" id="ckTotal">€0</span></div>
+<button type="submit" class="btn-primary w-full bg-brand-500 text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2" id="ckBtn"><span id="ckBtnText">Confirmar Pedido</span><svg id="ckSpin" class="hidden animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg></button>
+</form>
+</div>
+</div>
 
-    <!-- Admin Modal -->
-    <div id="adminModal" class="admin-modal hidden fixed inset-0 z-[80] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70" onclick="closeAdmin()"></div>
-        <div class="relative bg-neutral-900 border border-white/10 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <button onclick="closeAdmin()" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-            <h3 class="text-2xl font-semibold mb-2">Panel de Administración</h3>
-            <p class="text-neutral-500 text-sm mb-6">Gestión de pedidos recibidos</p>
-            <div id="adminContent"></div>
-        </div>
-    </div>
+<!-- Admin Login Modal -->
+<div id="loginModal" class="modal-fade hidden fixed inset-0 z-[80] flex items-center justify-center p-4">
+<div class="absolute inset-0 bg-black/70" onclick="closeLogin()"></div>
+<div class="relative bg-dark-900 border border-white/5 rounded-3xl p-8 max-w-sm w-full">
+<button onclick="closeLogin()" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5">✕</button>
+<div class="text-center mb-6">
+<div class="w-14 h-14 bg-brand-500/10 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">🔐</div>
+<h3 class="text-xl font-semibold">Panel Admin</h3>
+<p class="text-sm text-neutral-500 mt-1">Introduce tus credenciales</p>
+</div>
+<form id="loginForm" class="space-y-4">
+<div><input type="email" id="loginEmail" required placeholder="Email" class="form-input"></div>
+<div><input type="password" id="loginPass" required placeholder="Contraseña" class="form-input"></div>
+<div id="loginError" class="text-sm text-red-400 text-center hidden"></div>
+<button type="submit" class="btn-primary w-full bg-brand-500 text-white font-semibold py-3 rounded-full" id="loginBtn"><span id="loginBtnText">Entrar</span><svg id="loginSpin" class="hidden animate-spin w-5 h-5 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg></button>
+</form>
+</div>
+</div>
 
-    <!-- ==================== NAVBAR ==================== -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8">
-            <!-- Top bar: logo + actions -->
-            <div class="py-3 flex items-center justify-between">
-                <a href="#hero" class="flex items-center gap-2 group flex-shrink-0">
-                    <div class="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <div class="hidden sm:block">
-                        <span class="text-lg font-semibold tracking-tight leading-none block">José Catálogo</span>
-                        <span class="text-[10px] text-neutral-500 uppercase tracking-widest">Eléctrico</span>
-                    </div>
-                </a>
+<!-- Admin Panel -->
+<div id="adminPanel" class="modal-fade hidden fixed inset-0 z-[80] bg-dark-950 flex flex-col">
+<div class="flex items-center justify-between px-6 py-4 border-b border-white/5 flex-shrink-0">
+<div class="flex items-center gap-3">
+<img src="https://raw.githubusercontent.com/MJB1207/Jose-catalgo-el-ctrico-/14bc2fcfce499baebf700d99c6d6544d688d720b/1783029698923.png" alt="Logo" class="logo-img-sm">
+<span class="text-lg font-semibold">Admin</span><span id="adminEmail" class="text-xs text-neutral-500"></span>
+</div>
+<button onclick="closeAdmin()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/5">✕</button>
+</div>
+<div class="flex flex-1 overflow-hidden">
+<div class="w-48 border-r border-white/5 p-3 space-y-1 flex-shrink-0 hidden md:block" id="adminSidebar"></div>
+<div class="flex-1 overflow-y-auto p-6" id="adminContent"></div>
+</div>
+</div>
 
-                <div class="flex items-center gap-3">
-                    <!-- DB Status -->
-                    <div class="hidden md:flex items-center gap-1.5 mr-2" title="Supabase">
-                        <div class="w-1.5 h-1.5 rounded-full bg-neutral-600" id="dbDot"></div>
-                        <span class="text-[9px] text-neutral-600 uppercase" id="dbLabel">DB</span>
-                    </div>
-                    <!-- Admin -->
-                    <button onclick="openAdmin()" class="admin-btn w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors" title="Admin">
-                        <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    </button>
-                    <!-- Cart -->
-                    <button onclick="toggleCart()" class="relative w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:border-orange-500/30 transition-all">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
-                        <span id="cartBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span>
-                    </button>
-                    <!-- Mobile menu -->
-                    <button id="menuToggle" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg border border-white/10 hover:bg-white/5">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    </button>
-                </div>
-            </div>
-            <!-- Categories bar -->
-            <div class="hidden lg:flex items-center gap-6 pb-3 overflow-x-auto" id="catBar">
-                <a href="#destacados" class="cat-link text-sm text-neutral-400 hover:text-white transition-colors whitespace-nowrap font-medium">⭐ Destacados</a>
-            </div>
-        </div>
-    </nav>
+<!-- Mobile Menu -->
+<div id="mobileMenu" class="fixed inset-0 z-[60] bg-dark-950/98 backdrop-blur-lg flex flex-col" style="transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)">
+<div class="flex items-center justify-between px-4 py-3 border-b border-white/5">
+<img src="https://raw.githubusercontent.com/MJB1207/Jose-catalgo-el-ctrico-/14bc2fcfce499baebf700d99c6d6544d688d720b/1783029698923.png" alt="Logo" class="logo-img-sm">
+<button id="menuClose" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/5 ml-auto">✕</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-1" id="mobileCatList"></div>
+</div>
 
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="fixed inset-0 z-[60] bg-neutral-950/98 backdrop-blur-lg flex flex-col" style="transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-white/5">
-            <span class="text-lg font-semibold">Menú</span>
-            <button id="menuClose" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/5"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-6 space-y-1" id="mobileCatList"></div>
-    </div>
+<!-- NAVBAR -->
+<nav class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-white/5">
+<div class="max-w-7xl mx-auto px-4 lg:px-8">
+<div class="py-3 flex items-center justify-between">
+<a href="#hero" class="flex items-center gap-3 group flex-shrink-0">
+<img src="https://raw.githubusercontent.com/MJB1207/Jose-catalgo-el-ctrico-/14bc2fcfce499baebf700d99c6d6544d688d720b/1783029698923.png" alt="José Catálogo Eléctrico" class="logo-img group-hover:scale-105 transition-transform duration-300">
+<div class="hidden sm:block">
+<span class="text-base font-bold tracking-tight leading-none block text-white">José Catálogo</span>
+<span class="text-[10px] text-brand-400 uppercase tracking-[0.15em] font-semibold">Eléctrico</span>
+</div>
+</a>
+<div class="flex items-center gap-2">
+<div class="hidden md:flex items-center gap-1.5 mr-2"><div class="w-1.5 h-1.5 rounded-full bg-neutral-600" id="dbDot"></div><span class="text-[9px] text-neutral-600 uppercase" id="dbLabel">DB</span></div>
+<button onclick="handleAdminClick()" class="admin-btn w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/5" title="Admin" id="adminBtn">⚙️</button>
+<button onclick="toggleCart()" class="relative w-10 h-10 flex items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20 hover:border-brand-500/40 transition-all text-brand-400">🛒<span id="cartBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</span></button>
+<button id="menuToggle" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg border border-white/10 hover:bg-white/5">☰</button>
+</div>
+</div>
+<div class="hidden lg:flex items-center gap-6 pb-3 overflow-x-auto" id="catBar"></div>
+</div>
+</nav>
 
-    <!-- ==================== HERO ==================== -->
-    <section id="hero" class="relative min-h-[85vh] flex items-center hero-gradient solar-grid overflow-hidden">
-        <div class="absolute top-1/4 right-1/4 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl animate-float"></div>
-        <div class="max-w-7xl mx-auto px-4 lg:px-8 pt-28 pb-20 w-full">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div class="space-y-8">
-                    <div class="animate-fade-in-up inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
-                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        <span class="text-sm font-medium text-neutral-300">Envío en 24-48h · Más de 5.000 productos</span>
-                    </div>
-                    <h1 class="animate-fade-in-up delay-100 text-5xl md:text-6xl lg:text-7xl font-semibold leading-[0.9] tracking-tight text-shadow-hero">
-                        <span class="gradient-text">Material eléctrico</span><br>
-                        <span class="text-orange-500">profesional</span>
-                    </h1>
-                    <p class="animate-fade-in-up delay-200 text-lg text-neutral-400 max-w-lg leading-relaxed">
-                        Todo lo que necesitas para tu instalación eléctrica. Precios de fabricante, entrega rápida y asesoramiento técnico.
-                    </p>
-                    <div class="animate-fade-in-up delay-300 flex flex-wrap gap-4">
-                        <a href="#destacados" class="btn-primary bg-orange-500 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-3 animate-pulse-glow">
-                            Ver Destacados <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </a>
-                        <a href="#categorias" class="border border-white/10 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-3 hover:bg-white/5 transition-all">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-                            Ver Catálogo
-                        </a>
-                    </div>
-                    <div class="animate-fade-in-up delay-400 flex flex-wrap gap-8 pt-4">
-                        <div><div class="text-3xl font-semibold text-white">5.000+</div><div class="text-sm text-neutral-500">Productos</div></div>
-                        <div class="w-px bg-white/10"></div>
-                        <div><div class="text-3xl font-semibold text-white">24h</div><div class="text-sm text-neutral-500">Envío rápido</div></div>
-                        <div class="w-px bg-white/10"></div>
-                        <div><div class="text-3xl font-semibold text-white">15+</div><div class="text-sm text-neutral-500">Años experiencia</div></div>
-                    </div>
-                </div>
-                <div class="relative hidden lg:block animate-fade-in-up delay-300">
-                    <div class="rounded-3xl overflow-hidden shadow-2xl" style="box-shadow:0 20px 80px rgba(247,78,9,.15)">
-                        <img src="https://picsum.photos/seed/electrical-panel-store/600/500.jpg" alt="Catálogo eléctrico" class="w-full h-[450px] object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-transparent to-transparent rounded-3xl"></div>
-                    </div>
-                    <div class="absolute -bottom-4 -left-4 glass-card rounded-2xl p-4 animate-float" style="animation-delay:-2s">
-                        <div class="flex items-center gap-3"><div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><div><div class="text-xs text-neutral-400">Garantía</div><div class="text-sm font-semibold">2 años</div></div></div>
-                    </div>
-                    <div class="absolute -top-4 -right-4 glass-card rounded-2xl p-4 animate-float" style="animation-delay:-4s">
-                        <div class="flex items-center gap-3"><div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div><div class="text-xs text-neutral-400">Envío</div><div class="text-sm font-semibold">24-48h</div></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- HERO -->
+<section id="hero" class="relative min-h-[80vh] flex items-center hero-gradient grid-bg overflow-hidden">
+<div class="absolute top-1/4 right-1/4 w-72 h-72 bg-brand-500/8 rounded-full blur-3xl animate-float"></div>
+<div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-brand-500/5 rounded-full blur-3xl animate-float" style="animation-delay:-3s"></div>
+<div class="max-w-7xl mx-auto px-4 lg:px-8 pt-28 pb-20 w-full">
+<div class="grid lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-8">
+<div class="animate-fade-in-up inline-flex items-center gap-2 bg-white/5 border border-white/8 rounded-full px-4 py-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span class="text-sm font-medium text-neutral-300">Envío 24-48h · Más de 5.000 productos</span></div>
+<h1 class="animate-fade-in-up delay-100 text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[.9] tracking-tight text-shadow-hero">
+<span class="gradient-text">Material eléctrico</span><br>
+<span class="text-brand-400">profesional</span>
+</h1>
+<p class="animate-fade-in-up delay-200 text-lg text-neutral-400 max-w-lg leading-relaxed">Todo lo que necesitas para tu instalación. Precios de fabricante y entrega rápida.</p>
+<div class="animate-fade-in-up delay-300 flex flex-wrap gap-4">
+<a href="#destacados" class="btn-primary bg-brand-500 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-3 animate-pulse-glow">Ver Destacados →</a>
+<a href="#categorias" class="border border-white/10 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center gap-3 hover:bg-white/5 transition-all">📋 Ver Catálogo</a>
+</div>
+<div class="animate-fade-in-up delay-400 flex flex-wrap gap-8 pt-4"><div><div class="text-3xl font-bold">5.000+</div><div class="text-sm text-neutral-500">Productos</div></div><div class="w-px bg-white/10"></div><div><div class="text-3xl font-bold">24h</div><div class="text-sm text-neutral-500">Envío</div></div><div class="w-px bg-white/10"></div><div><div class="text-3xl font-bold">15+</div><div class="text-sm text-neutral-500">Años</div></div></div>
+</div>
+<div class="relative hidden lg:block animate-fade-in-up delay-300">
+<div class="rounded-3xl overflow-hidden shadow-2xl" style="box-shadow:0 20px 80px rgba(59,130,246,.12)">
+<img src="https://picsum.photos/seed/electrical-panel-store/600/500.jpg" alt="Catálogo" class="w-full h-[450px] object-cover">
+<div class="absolute inset-0 bg-gradient-to-t from-dark-900/80 via-transparent to-transparent rounded-3xl"></div>
+</div>
+<div class="absolute -bottom-4 -left-4 glass-card rounded-2xl p-4 animate-float" style="animation-delay:-2s"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center text-lg">✅</div><div><div class="text-xs text-neutral-400">Garantía</div><div class="text-sm font-semibold">2 años</div></div></div></div>
+</div>
+</div>
+</div>
+</section>
 
-    <!-- ==================== DESTACADOS ==================== -->
-    <section id="destacados" class="relative bg-neutral-900 py-20 md:py-28">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8">
-            <div class="reveal text-center mb-14">
-                <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-4">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                    <span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Productos Estrella</span>
-                </div>
-                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight">Nuestros <span class="text-orange-500">Destacados</span></h2>
-            </div>
-            <div id="destacadosSkeleton" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"><div class="skeleton h-96"></div><div class="skeleton h-96"></div><div class="skeleton h-96"></div><div class="skeleton h-96"></div></div>
-            <div id="destacadosGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 hidden"></div>
-        </div>
-    </section>
+<!-- DESTACADOS -->
+<section id="destacados" class="relative bg-dark-900 py-20">
+<div class="max-w-7xl mx-auto px-4 lg:px-8">
+<div class="reveal text-center mb-14">
+<div class="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 rounded-full px-4 py-2 mb-4"><span class="text-sm font-semibold text-brand-400 uppercase tracking-wider">⭐ Productos Estrella</span></div>
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight">Nuestros <span class="text-brand-400">Destacados</span></h2>
+</div>
+<div id="destacadosSkeleton" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"><div class="skeleton h-96"></div><div class="skeleton h-96"></div><div class="skeleton h-96"></div><div class="skeleton h-96"></div></div>
+<div id="destacadosGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 hidden"></div>
+</div>
+</section>
 
-    <!-- ==================== CATEGORÍAS + PRODUCTOS ==================== -->
-    <section id="categorias" class="relative bg-neutral-950 py-20 md:py-28">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8">
-            <div class="reveal text-center mb-14">
-                <div class="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-4">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-                    <span class="text-sm font-semibold text-orange-400 uppercase tracking-wider">Catálogo Completo</span>
-                </div>
-                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight">Explora por <span class="text-orange-500">Categoría</span></h2>
-            </div>
-            <div id="categoriasContainer" class="space-y-20"></div>
-        </div>
-    </section>
+<!-- CATEGORÍAS -->
+<section id="categorias" class="relative bg-dark-950 py-20">
+<div class="max-w-7xl mx-auto px-4 lg:px-8">
+<div class="reveal text-center mb-14">
+<div class="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 rounded-full px-4 py-2 mb-4"><span class="text-sm font-semibold text-brand-400 uppercase tracking-wider">📋 Catálogo Completo</span></div>
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight">Explora por <span class="text-brand-400">Categoría</span></h2>
+</div>
+<div id="categoriasContainer" class="space-y-20"></div>
+</div>
+</section>
 
-    <!-- ==================== FOOTER MÍNIMO ==================== -->
-    <footer class="bg-neutral-900 border-t border-white/5 py-8">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <div class="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
-                <span class="text-sm font-semibold">José Catálogo Eléctrico</span>
-            </div>
-            <div class="flex items-center gap-6 text-sm text-neutral-500">
-                <span>📞 900 123 456</span>
-                <span>✉️ info@josecatalogo.es</span>
-                <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full" id="footerDot"></span> Supabase</span>
-            </div>
-        </div>
-    </footer>
+<!-- FOOTER -->
+<footer class="bg-dark-950 border-t border-white/5 py-8">
+<div class="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<img src="https://raw.githubusercontent.com/MJB1207/Jose-catalgo-el-ctrico-/14bc2fcfce499baebf700d99c6d6544d688d720b/1783029698923.png" alt="José Catálogo Eléctrico" class="logo-img-footer">
+<span class="text-sm font-semibold text-neutral-400">José Catálogo Eléctrico</span>
+</div>
+<div class="flex items-center gap-6 text-sm text-neutral-500"><span>📞 900 123 456</span><span>✉️ info@josecatalogo.es</span><span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full" id="footerDot"></span> Supabase</span></div>
+</div>
+</footer>
 
-    <!-- ===================== JAVASCRIPT ===================== -->
-    <script>
-    const SUPABASE_URL = 'https://dfgwlboeebxfpfhfuvip.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZ3dsYm9lZWJ4ZnBwaGZ1dmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMDczOTgsImV4cCI6MjA5ODU4MzM5OH0.5Dm8JqFRntvPi4Jf-0a4bU8SRpPRThXW52wm_QNiQiI';
+<script>
+const SB_URL='https://dfgwlboeebxfpfhfuvip.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZ3dsYm9lZWJ4ZnBwaGZ1dmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMDczOTgsImV4cCI6MjA5ODU4MzM5OH0.5Dm8JqFRntvPi4Jf-0a4bU8SRpPRThXW52wm_QNiQiI';
+let sb=null,dbOk=false,allProducts=[],allCats=[],allMunis=[],cart=JSON.parse(localStorage.getItem('cart')||'[]'),selectedMuni=null,adminTab='pedidos',editingId=null;
+const EMOJIS=['💡','🔦','🌟','✨','🔆','🔅','🏠','🏭','⚡','🔌','🔋','🛡️','🔧','🔨','⚙️','🔩','🔘','👆','🔄','🔀','◻️','🔶','🔷','📦','🔗','🧵','📏','🏗️','🛠️','⚒️','💪','📐','🤖','📱','💻','🧠','📡','📶','🖥️','⌨️','⭐','🔥','💎','🏷️','📦','🎯','📢','🛒','🏅','🏆','💎','🪙','💰','💳','🚚','✈️','📍','🗺️','📏','🔋','🌊','☀️','🏠','🏢','🏗️','🔧','🛠️'];
+const STATUS_COLORS={pendiente:'bg-yellow-500/20 text-yellow-400',confirmado:'bg-blue-500/20 text-blue-400',enviado:'bg-purple-500/20 text-purple-400',entregado:'bg-green-500/20 text-green-400',cancelado:'bg-red-500/20 text-red-400'};
 
-    let sb = null, dbOk = false, allProducts = [], allCategories = [];
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+async function init(){try{if(window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SB_URL,SB_KEY);await testDb()}else{setDb(false);loadFallback()}}catch(e){setDb(false);loadFallback()}checkAdminSession();renderCart()}
 
-    // ===== INIT =====
-    function init() {
-        try {
-            if (window.supabase && window.supabase.createClient) {
-                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                testDb();
-            } else { setDb(false); loadFallback(); }
-        } catch(e) { setDb(false); loadFallback(); }
-        renderCart();
-    }
+async function testDb(){try{const{error}=await sb.from('categorias').select('id').limit(1);if(error)throw error;dbOk=true;setDb(true);await loadData()}catch(e){console.warn('DB:',e.message);setDb(false);loadFallback()}}
 
-    async function testDb() {
-        try {
-            const { error } = await sb.from('categorias').select('id').limit(1);
-            if (error) throw error;
-            dbOk = true; setDb(true); loadData();
-        } catch(e) { console.warn('DB fail:', e.message); setDb(false); loadFallback(); }
-    }
+function setDb(ok){const d=document.getElementById('dbDot'),l=document.getElementById('dbLabel'),f=document.getElementById('footerDot');if(d)d.className=`w-1.5 h-1.5 rounded-full ${ok?'bg-green-500 animate-pulse':'bg-neutral-600'}`;if(l){l.textContent=ok?'DB OK':'Offline';l.className=`text-[9px] uppercase ${ok?'text-green-500':'text-neutral-600'}`}if(f)f.className=`w-1.5 h-1.5 rounded-full ${ok?'bg-green-500':'bg-neutral-600'}`}
 
-    function setDb(ok) {
-        const d = document.getElementById('dbDot'), l = document.getElementById('dbLabel'), f = document.getElementById('footerDot');
-        if(d) d.className = `w-1.5 h-1.5 rounded-full ${ok?'bg-green-500 animate-pulse':'bg-neutral-600'}`;
-        if(l) { l.textContent = ok?'DB OK':'Offline'; l.className = `text-[9px] uppercase ${ok?'text-green-500':'text-neutral-600'}`; }
-        if(f) f.className = `w-1.5 h-1.5 rounded-full ${ok?'bg-green-500':'bg-neutral-600'}`;
-    }
+async function loadData(){const[c,p,m]=await Promise.all([sb.from('categorias').select('*').eq('activa',true).order('orden'),sb.from('productos').select('*,categorias(nombre,slug,emoji)').eq('activo',true).order('orden'),sb.from('municipios').select('*').eq('activo',true).order('orden')]);if(c.error||p.error||m.error)throw new Error('Load error');allCats=c.data;allProducts=p.data;allMunis=m.data;buildCatBar();renderDestacados();renderCategorias();populateMuniSelect()}
 
-    async function loadData() {
-        const [catRes, prodRes] = await Promise.all([
-            sb.from('categorias').select('*').eq('activa',true).order('orden'),
-            sb.from('productos').select('*,categorias(nombre,slug)').eq('activo',true).order('orden')
-        ]);
-        if(catRes.error || prodRes.error) throw new Error(catRes.error?.message || prodRes.error?.message);
-        allCategories = catRes.data; allProducts = prodRes.data;
-        buildCatBar(); renderDestacados(); renderCategorias();
-    }
+function loadFallback(){
+allCats=[{id:'c1',nombre:'Iluminación LED',slug:'iluminacion-led',emoji:'💡',descripcion:'Paneles, tiras y downlights.'},{id:'c2',nombre:'Material Eléctrico',slug:'material-electrico',emoji:'⚡',descripcion:'Cuadros y protecciones.'},{id:'c3',nombre:'Interruptores',slug:'interruptores-enchufes',emoji:'🔘',descripcion:'Mecanismos y enchufes.'},{id:'c4',nombre:'Cableado',slug:'cableado',emoji:'🔗',descripcion:'Cables y conducciones.'},{id:'c5',nombre:'Herramientas',slug:'herramientas',emoji:'🔧',descripcion:'Multímetros y herramientas.'},{id:'c6',nombre:'Automatización',slug:'automatizacion',emoji:'🤖',descripcion:'Relés WiFi y domótica.'}];
+allProducts=[{id:'p1',nombre:'Panel LED 60x60 40W',descripcion:'Panel empotrable 60x60cm, 4000K, 3600lm.',precio:18.95,precio_antiguo:24.90,imagen_url:'https://picsum.photos/seed/led-panel-60/600/600.jpg',categoria_id:'c1',categorias:{nombre:'Iluminación LED',slug:'iluminacion-led',emoji:'💡'},destacado:true,stock:120,notas:'595x595x12mm · 4000K · CRI>80 · 50.000h'},{id:'p2',nombre:'Tira LED RGB 5m WiFi',descripcion:'Tira RGB 5m, control app y voz.',precio:14.50,precio_antiguo:19.99,imagen_url:'https://picsum.photos/seed/led-strip-rgb/600/600.jpg',categoria_id:'c1',categorias:{nombre:'Iluminación LED',slug:'iluminacion-led',emoji:'💡'},destacado:true,stock:85,notas:'5050 SMD · 150 LED/m · 12V DC · Incluye driver WiFi'},{id:'p3',nombre:'Cuadro Eléctrico 12M',descripcion:'Cuadro empotrable 12 módulos IP40.',precio:16.50,precio_antiguo:21.00,imagen_url:'https://picsum.photos/seed/cuadro-electrico-12/600/600.jpg',categoria_id:'c2',categorias:{nombre:'Material Eléctrico',slug:'material-electrico',emoji:'⚡'},destacado:true,stock:60,notas:'308x220x95mm · PVC autoextinguible · Incluye tapa'},{id:'p4',nombre:'Diferencial 30mA 25A',descripcion:'Diferencial bipolar 30mA 25A.',precio:12.80,precio_antiguo:16.50,imagen_url:'https://picsum.photos/seed/diferencial-30ma/600/600.jpg',categoria_id:'c2',categorias:{nombre:'Material Eléctrico',slug:'material-electrico',emoji:'⚡'},destacado:true,stock:90,notas:'30mA · 25A · Curva C · 230/400V AC'},{id:'p5',nombre:'Mechanismo Blanco 1T',descripcion:'Mecanismo embutir blanco mate.',precio:2.40,precio_antiguo:3.50,imagen_url:'https://picsum.photos/seed/mechanismo-blanco-1t/600/600.jpg',categoria_id:'c3',categorias:{nombre:'Interruptores',slug:'interruptores-enchufes',emoji:'🔘'},destacado:true,stock:250,notas:null},{id:'p6',nombre:'Relé WiFi Tuya 16A',descripcion:'Módulo relé WiFi Tuya.',precio:9.90,precio_antiguo:14.50,imagen_url:'https://picsum.photos/seed/rele-wifi-tuya/600/600.jpg',categoria_id:'c6',categorias:{nombre:'Automatización',slug:'automatizacion',emoji:'🤖'},destacado:true,stock:80,notas:'16A · WiFi 2.4GHz · Tuya/Alexa'},{id:'p7',nombre:'Cable 2.5mm² 100m',descripcion:'Cable flexible 2.5mm² x 100m.',precio:42.00,precio_antiguo:55.00,imagen_url:'https://picsum.photos/seed/cable-25mm-100m/600/600.jpg',categoria_id:'c4',categorias:{nombre:'Cableado',slug:'cableado',emoji:'🔗'},destacado:false,stock:30,notas:'H07V-K · Negro · Certificado'},{id:'p8',nombre:'Multímetro Digital RMS',descripcion:'Multímetro True RMS.',precio:24.90,precio_antiguo:34.90,imagen_url:'https://picsum.photos/seed/multimetro-digital/600/600.jpg',categoria_id:'c5',categorias:{nombre:'Herramientas',slug:'herramientas',emoji:'🔧'},destacado:false,stock:55,notas:'True RMS · AC/DC · Resistencia'}];
+allMunis=[{id:'m1',nombre:'Madrid Capital',provincia:'Madrid',costo_envio:4.90,tiempo_entrega:'24h'},{id:'m2',nombre:'Resto Madrid',provincia:'Madrid',costo_envio:7.90,tiempo_entrega:'48-72h'},{id:'m3',nombre:'Resto España',provincia:'Nacional',costo_envio:12.90,tiempo_entrega:'2-5 días'}];
+buildCatBar();renderDestacados();renderCategorias();populateMuniSelect()}
 
-    function loadFallback() {
-        allCategories = [
-            {id:'c1',nombre:'Iluminación LED',slug:'iluminacion-led',icono:'lightbulb'},
-            {id:'c2',nombre:'Material Eléctrico',slug:'material-electrico',icono:'plug-zap'},
-            {id:'c3',nombre:'Interruptores y Enchufes',slug:'interruptores-enchufes',icono:'toggle-right'},
-            {id:'c4',nombre:'Cableado',slug:'cableado',icono:'cable'},
-            {id:'c5',nombre:'Herramientas',slug:'herramientas',icono:'wrench'},
-            {id:'c6',nombre:'Automatización',slug:'automatizacion',icono:'cpu'}
-        ];
-        allProducts = [
-            {id:'p1',nombre:'Panel LED 60x60 40W',descripcion:'Panel LED empotrable 60x60cm, 4000K, 3600lm.',precio:18.95,precio_antiguo:24.90,imagen_url:'https://picsum.photos/seed/led-panel-60/600/600.jpg',categoria_id:'c1',categorias:{nombre:'Iluminación LED',slug:'iluminacion-led'},destacado:true,stock:120},
-            {id:'p2',nombre:'Tira LED RGB 5m WiFi',descripcion:'Tira LED RGB 5m, control app y voz.',precio:14.50,precio_antiguo:19.99,imagen_url:'https://picsum.photos/seed/led-strip-rgb/600/600.jpg',categoria_id:'c1',categorias:{nombre:'Iluminación LED',slug:'iluminacion-led'},destacado:true,stock:85},
-            {id:'p3',nombre:'Cuadro Eléctrico 12 Mód.',descripcion:'Cuadro empotrable 12 módulos, IP40.',precio:16.50,precio_antiguo:21.00,imagen_url:'https://picsum.photos/seed/cuadro-electrico-12/600/600.jpg',categoria_id:'c2',categorias:{nombre:'Material Eléctrico',slug:'material-electrico'},destacado:true,stock:60},
-            {id:'p4',nombre:'Diferencial 30mA 25A',descripcion:'Interruptor diferencial 30mA 25A bipolar.',precio:12.80,precio_antiguo:16.50,imagen_url:'https://picsum.photos/seed/diferencial-30ma/600/600.jpg',categoria_id:'c2',categorias:{nombre:'Material Eléctrico',slug:'material-electrico'},destacado:true,stock:90},
-            {id:'p5',nombre:'Mechanismo Blanco 1 Tecla',descripcion:'Mecanismo embutir blanco mate 1 tecla.',precio:2.40,precio_antiguo:3.50,imagen_url:'https://picsum.photos/seed/mechanismo-blanco-1t/600/600.jpg',categoria_id:'c3',categorias:{nombre:'Interruptores y Enchufes',slug:'interruptores-enchufes'},destacado:true,stock:250},
-            {id:'p6',nombre:'Relé WiFi Tuya 16A',descripcion:'Módulo relé WiFi compatible Tuya.',precio:9.90,precio_antiguo:14.50,imagen_url:'https://picsum.photos/seed/rele-wifi-tuya/600/600.jpg',categoria_id:'c6',categorias:{nombre:'Automatización',slug:'automatizacion'},destacado:true,stock:80},
-            {id:'p7',nombre:'Cable 2.5mm² 100m',descripcion:'Cable H07V-K 2.5mm² flexible 100m.',precio:42.00,precio_antiguo:55.00,imagen_url:'https://picsum.photos/seed/cable-25mm-100m/600/600.jpg',categoria_id:'c4',categorias:{nombre:'Cableado',slug:'cableado'},destacado:false,stock:30},
-            {id:'p8',nombre:'Multímetro Digital RMS',descripcion:'Multímetro True RMS, AC/DC, resistencia.',precio:24.90,precio_antiguo:34.90,imagen_url:'https://picsum.photos/seed/multimetro-digital/600/600.jpg',categoria_id:'c5',categorias:{nombre:'Herramientas',slug:'herramientas'},destacado:false,stock:55},
-            {id:'p9',nombre:'Downlight LED 7W',descripcion:'Spot LED empotrable 7W, 3000K.',precio:3.75,precio_antiguo:5.50,imagen_url:'https://picsum.photos/seed/downlight-led/600/600.jpg',categoria_id:'c1',categorias:{nombre:'Iluminación LED',slug:'iluminacion-led'},destacado:false,stock:200},
-            {id:'p10',nombre:'Magnetotérmico 16A C',descripcion:'IGP 1P 16A curva C 4.5kA.',precio:6.90,precio_antiguo:8.50,imagen_url:'https://picsum.photos/seed/magnetotermico-16a/600/600.jpg',categoria_id:'c2',categorias:{nombre:'Material Eléctrico',slug:'material-electrico'},destacado:false,stock:150},
-        ];
-        buildCatBar(); renderDestacados(); renderCategorias();
-    }
+function buildCatBar(){const bar=document.getElementById('catBar'),mob=document.getElementById('mobileCatList');let h='<a href="#destacados" class="cat-link text-sm text-neutral-400 hover:text-white transition-colors whitespace-nowrap font-medium">⭐ Destacados</a>';let m='<a href="#destacados" class="block py-3 text-lg font-medium text-neutral-300 hover:text-brand-400 transition-colors border-b border-white/5">⭐ Destacados</a>';allCats.forEach(c=>{h+=`<a href="#cat-${c.slug}" class="cat-link text-sm text-neutral-400 hover:text-white transition-colors whitespace-nowrap font-medium">${c.emoji||'📦'} ${c.nombre}</a>`;m+=`<a href="#cat-${c.slug}" class="block py-3 text-lg font-medium text-neutral-300 hover:text-brand-400 transition-colors border-b border-white/5">${c.emoji||'📦'} ${c.nombre}</a>`});bar.innerHTML=h;mob.innerHTML=m;document.querySelectorAll('#mobileCatList a').forEach(l=>l.addEventListener('click',()=>{document.getElementById('mobileMenu').style.transform='translateX(100%)'}))}
 
-    // ===== CATEGORY BAR =====
-    function buildCatBar() {
-        const bar = document.getElementById('catBar');
-        const mobile = document.getElementById('mobileCatList');
-        let html = '<a href="#destacados" class="cat-link text-sm text-neutral-400 hover:text-white transition-colors whitespace-nowrap font-medium">⭐ Destacados</a>';
-        let mhtml = '<a href="#destacados" class="mobile-cat-link block py-3 text-lg font-medium text-neutral-300 hover:text-orange-500 transition-colors border-b border-white/5">⭐ Destacados</a>';
-        allCategories.forEach(c => {
-            html += `<a href="#cat-${c.slug}" class="cat-link text-sm text-neutral-400 hover:text-white transition-colors whitespace-nowrap font-medium">${c.nombre}</a>`;
-            mhtml += `<a href="#cat-${c.slug}" class="mobile-cat-link block py-3 text-lg font-medium text-neutral-300 hover:text-orange-500 transition-colors border-b border-white/5">${c.nombre}</a>`;
-        });
-        bar.innerHTML = html;
-        mobile.innerHTML = mhtml;
-        document.querySelectorAll('.mobile-cat-link').forEach(l => l.addEventListener('click', () => {
-            document.getElementById('mobileMenu').style.transform = 'translateX(100%)';
-        }));
-    }
+function productCard(p){const disc=p.precio_antiguo?Math.round((1-p.precio/p.precio_antiguo)*100):0;const catEmoji=p.categorias?.emoji||'📦';return`<div class="card-product glass-card rounded-3xl overflow-hidden group"><div class="relative overflow-hidden"><img src="${p.imagen_url}" alt="${p.nombre}" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">${disc?`<div class="absolute top-3 left-3 badge-discount text-white text-xs font-bold px-2.5 py-1 rounded-full">-${disc}%</div>`:''}${p.destacado?`<div class="absolute top-3 right-3 bg-brand-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">⭐</div>`:''}</div><div class="p-5"><p class="text-xs text-neutral-500 mb-1">${catEmoji} ${p.categorias?.nombre||'General'}</p><h3 class="font-semibold text-sm leading-tight mb-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.nombre}</h3><p class="text-xs text-neutral-500 leading-relaxed mb-3" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.descripcion}</p>${p.notas?`<button onclick="this.nextElementSibling.classList.toggle('open')" class="text-xs text-brand-400 hover:underline mb-3 flex items-center gap-1">ℹ️ Ver especificaciones <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button><div class="notes-box text-xs text-neutral-400 leading-relaxed bg-white/5 rounded-lg p-3 mb-3">${p.notas.split('·').map(n=>`<span class="block">• ${n.trim()}</span>`).join('')}</div>`:''}<div class="flex items-end gap-2 mb-4"><span class="text-2xl font-bold price-tag">${p.precio.toFixed(2).replace('.',',')}€</span>${p.precio_antiguo?`<span class="text-sm text-neutral-600 line-through">${p.precio_antiguo.toFixed(2).replace('.',',')}€</span>`:''}</div><button onclick="addToCart('${p.id}')" class="w-full bg-brand-500/10 border border-brand-500/20 text-brand-400 font-medium text-sm py-3 rounded-xl hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all flex items-center justify-center gap-2">+ Añadir al carrito</button></div></div>`}
 
-    // ===== RENDER PRODUCT CARD =====
-    function productCard(p) {
-        const discount = p.precio_antiguo ? Math.round((1 - p.precio / p.precio_antiguo) * 100) : 0;
-        return `
-        <div class="card-product glass-card rounded-3xl overflow-hidden group">
-            <div class="relative overflow-hidden">
-                <img src="${p.imagen_url}" alt="${p.nombre}" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
-                ${discount ? `<div class="absolute top-3 left-3 badge-discount text-white text-xs font-bold px-2.5 py-1 rounded-full">-${discount}%</div>` : ''}
-                ${p.destacado ? `<div class="absolute top-3 right-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">ESTRELLA</div>` : ''}
-            </div>
-            <div class="p-5">
-                <p class="text-xs text-neutral-500 mb-1">${p.categorias?.nombre || 'General'}</p>
-                <h3 class="font-semibold text-sm leading-tight mb-2 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.nombre}</h3>
-                <p class="text-xs text-neutral-500 leading-relaxed mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.descripcion}</p>
-                <div class="flex items-end gap-2 mb-4">
-                    <span class="text-2xl font-bold price-tag">${p.precio.toFixed(2).replace('.',',')}€</span>
-                    ${p.precio_antiguo ? `<span class="text-sm text-neutral-600 line-through">${p.precio_antiguo.toFixed(2).replace('.',',')}€</span>` : ''}
-                </div>
-                <button onclick="addToCart('${p.id}')" class="w-full bg-white/5 border border-white/10 text-white font-medium text-sm py-3 rounded-xl hover:bg-orange-500 hover:border-orange-500 transition-all flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                    Añadir al carrito
-                </button>
-            </div>
-        </div>`;
-    }
+function renderDestacados(){const s=document.getElementById('destacadosSkeleton'),g=document.getElementById('destacadosGrid');s.classList.add('hidden');g.classList.remove('hidden');g.innerHTML=allProducts.filter(p=>p.destacado).map(productCard).join('')}
 
-    // ===== DESTACADOS =====
-    function renderDestacados() {
-        const sk = document.getElementById('destacadosSkeleton');
-        const grid = document.getElementById('destacadosGrid');
-        const featured = allProducts.filter(p => p.destacado);
-        sk.classList.add('hidden');
-        grid.classList.remove('hidden');
-        grid.innerHTML = featured.map(productCard).join('');
-    }
+function renderCategorias(){const c=document.getElementById('categoriasContainer');let h='';allCats.forEach(cat=>{const prods=allProducts.filter(p=>p.categoria_id===cat.id);if(!prods.length)return;h+=`<div id="cat-${cat.slug}" class="reveal"><div class="flex items-center gap-4 mb-6"><span class="text-4xl">${cat.emoji||'📦'}</span><div><h3 class="text-2xl md:text-3xl font-bold">${cat.nombre}</h3>${cat.descripcion?`<p class="text-sm text-neutral-500">${cat.descripcion}</p>`:''}</div><div class="flex-1 h-px bg-white/5 ml-4"></div></div><div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">${prods.map(productCard).join('')}</div></div>`});c.innerHTML=h;document.querySelectorAll('.reveal').forEach(el=>ro.observe(el))}
 
-    // ===== CATEGORÍAS =====
-    function renderCategorias() {
-        const container = document.getElementById('categoriasContainer');
-        let html = '';
-        allCategories.forEach(cat => {
-            const prods = allProducts.filter(p => p.categoria_id === cat.id);
-            if (!prods.length) return;
-            html += `
-            <div id="cat-${cat.slug}" class="reveal">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center"><i data-lucide="${cat.icono}" class="w-5 h-5 text-orange-500"></i></div>
-                    <h3 class="text-2xl md:text-3xl font-semibold">${cat.nombre}</h3>
-                    <div class="flex-1 h-px bg-white/5 ml-4"></div>
-                </div>
-                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">${prods.map(productCard).join('')}</div>
-            </div>`;
-        });
-        container.innerHTML = html;
-        lucide.createIcons();
-        document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
-    }
+function saveCart(){localStorage.setItem('cart',JSON.stringify(cart));updateCartUI()}
+function addToCart(pid){const p=allProducts.find(x=>x.id===pid);if(!p)return;const e=cart.find(x=>x.id===pid);if(e)e.qty++;else cart.push({id:p.id,nombre:p.nombre,precio:p.precio,imagen:p.imagen_url,qty:1});saveCart();showToast('Añadido al carrito',p.nombre)}
+function removeFromCart(pid){cart=cart.filter(x=>x.id!==pid);saveCart()}
+function changeQty(pid,d){const i=cart.find(x=>x.id===pid);if(!i)return;i.qty+=d;if(i.qty<=0){removeFromCart(pid);return}saveCart()}
+function getCartSub(){return cart.reduce((s,i)=>s+i.precio*i.qty,0)}
+function getCartCount(){return cart.reduce((s,i)=>s+i.qty,0)}
+function getShipping(){return selectedMuni?selectedMuni.costo_envio:0}
+function getCartTotal(){return getCartSub()+getShipping()}
 
-    // ===== CART =====
-    function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI(); }
+function updateCartUI(){const cnt=getCartCount(),badge=document.getElementById('cartBadge');badge.textContent=cnt;cnt>0?badge.classList.remove('hidden'):badge.classList.add('hidden');document.getElementById('cartCountDrawer').textContent=cnt;const items=document.getElementById('cartItems'),foot=document.getElementById('cartFooter'),empty=document.getElementById('cartEmpty');if(!cart.length){items.innerHTML='';foot.classList.add('hidden');empty.classList.remove('hidden');return}empty.classList.add('hidden');foot.classList.remove('hidden');document.getElementById('cartSubtotal').textContent=getCartSub().toFixed(2).replace('.',',')+'€';document.getElementById('cartShipping').textContent=selectedMuni?getShipping().toFixed(2).replace('.',',')+'€':'—';document.getElementById('cartTotal').textContent=getCartTotal().toFixed(2).replace('.',',')+'€';items.innerHTML=cart.map(i=>`<div class="flex gap-3 bg-white/5 rounded-xl p-3"><img src="${i.imagen}" class="w-14 h-14 rounded-lg object-cover flex-shrink-0"><div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">${i.nombre}</p><p class="text-brand-400 font-semibold text-sm">${i.precio.toFixed(2).replace('.',',')}€</p><div class="flex items-center gap-2 mt-1"><button onclick="changeQty('${i.id}',-1)" class="w-6 h-6 bg-white/10 rounded text-xs flex items-center justify-center hover:bg-white/20">−</button><span class="text-xs w-5 text-center">${i.qty}</span><button onclick="changeQty('${i.id}',1)" class="w-6 h-6 bg-white/10 rounded text-xs flex items-center justify-center hover:bg-white/20">+</button><button onclick="removeFromCart('${i.id}')" class="ml-auto text-neutral-600 hover:text-red-400 text-xs">🗑</button></div></div></div>`).join('')}
 
-    function addToCart(pid) {
-        const p = allProducts.find(x => x.id === pid);
-        if (!p) return;
-        const existing = cart.find(x => x.id === pid);
-        if (existing) { existing.qty++; } else { cart.push({ id: p.id, nombre: p.nombre, precio: p.precio, imagen: p.imagen_url, qty: 1 }); }
-        saveCart();
-        showToast('Añadido al carrito', p.nombre);
-    }
+function toggleCart(){const d=document.getElementById('cartDrawer'),o=document.getElementById('cartOverlay'),open=d.classList.contains('open');if(open){d.classList.remove('open');d.classList.add('closed');o.classList.add('hidden');document.body.style.overflow=''}else{d.classList.remove('closed');d.classList.add('open');o.classList.remove('hidden');document.body.style.overflow='hidden'}}
 
-    function removeFromCart(pid) {
-        cart = cart.filter(x => x.id !== pid);
-        saveCart();
-    }
+function populateMuniSelect(){const s=document.getElementById('ckMunicipio');s.innerHTML='<option value="">Seleccionar municipio...</option>'+allMunis.map(m=>`<option value="${m.id}" data-cost="${m.costo_envio}" data-time="${m.tiempo_entrega}">${m.nombre} (${m.provincia}) — ${m.costo_envio.toFixed(2).replace('.',',')}€ · ${m.tiempo_entrega}</option>`).join('')}
+document.getElementById('ckMunicipio').addEventListener('change',function(){const opt=this.selectedOptions[0];if(opt&&opt.value){selectedMuni={id:opt.value,costo_envio:parseFloat(opt.dataset.cost),tiempo_entrega:opt.dataset.time};document.getElementById('ckShippingInfo').classList.remove('hidden');document.getElementById('ckShippingCost').textContent=selectedMuni.costo_envio.toFixed(2).replace('.',',')+'€ · '+selectedMuni.tiempo_entrega}else{selectedMuni=null;document.getElementById('ckShippingInfo').classList.add('hidden')}updateCartUI();document.getElementById('ckTotal').textContent=getCartTotal().toFixed(2).replace('.',',')+'€'});
 
-    function changeQty(pid, delta) {
-        const item = cart.find(x => x.id === pid);
-        if (!item) return;
-        item.qty += delta;
-        if (item.qty <= 0) { removeFromCart(pid); return; }
-        saveCart();
-    }
+function openCheckout(){if(!cart.length)return;toggleCart();document.getElementById('ckTotal').textContent=getCartTotal().toFixed(2).replace('.',',')+'€';document.getElementById('checkoutModal').classList.remove('hidden');document.getElementById('checkoutModal').classList.add('visible');document.body.style.overflow='hidden'}
+function closeCheckout(){document.getElementById('checkoutModal').classList.remove('visible');document.getElementById('checkoutModal').classList.add('hidden');document.body.style.overflow=''}
 
-    function getCartTotal() { return cart.reduce((s, i) => s + i.precio * i.qty, 0); }
-    function getCartCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+document.getElementById('checkoutForm').addEventListener('submit',async(e)=>{e.preventDefault();const n=document.getElementById('ckName').value.trim(),ph=document.getElementById('ckPhone').value.trim(),em=document.getElementById('ckEmail').value.trim(),no=document.getElementById('ckNotes').value.trim();if(!n||!ph||!selectedMuni){showToast('Error','Completa todos los campos obligatorios');return}const btn=document.getElementById('ckBtn');document.getElementById('ckBtnText').textContent='Enviando...';document.getElementById('ckSpin').classList.remove('hidden');btn.disabled=true;btn.style.opacity='.7';const order={cliente_nombre:n,cliente_telefono:ph,cliente_email:em||null,municipio_id:selectedMuni.id,costo_envio:getShipping(),items:cart.map(i=>({id:i.id,nombre:i.nombre,precio:i.precio,qty:i.qty})),total:getCartTotal(),notas:no||null};let ok=false;if(dbOk&&sb){const{error}=await sb.from('pedidos').insert(order);ok=!error;if(error)console.error(error)}else ok=true;document.getElementById('ckBtnText').textContent='Confirmar Pedido';document.getElementById('ckSpin').classList.add('hidden');btn.disabled=false;btn.style.opacity='1';if(ok){cart=[];selectedMuni=null;saveCart();document.getElementById('checkoutForm').reset();document.getElementById('ckShippingInfo').classList.add('hidden');closeCheckout();showToast('¡Pedido enviado!','Te contactaremos para confirmar.')}else showToast('Error','No se pudo enviar')});
 
-    function updateCartUI() {
-        const count = getCartCount();
-        const badge = document.getElementById('cartBadge');
-        const drawerCount = document.getElementById('cartCountDrawer');
-        badge.textContent = count;
-        drawerCount.textContent = count;
-        if (count > 0) { badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); }
+async function checkAdminSession(){if(!sb)return;try{const{data:{session}}=await sb.auth.getSession();if(session){document.getElementById('adminBtn').classList.add('logged');document.getElementById('adminEmail').textContent=session.user.email}}catch(e){}}
+function handleAdminClick(){if(!sb){showToast('Error','Sin conexión');return}sb.auth.getSession().then(({data:{session}})=>{if(session)openAdmin();else{document.getElementById('loginModal').classList.remove('hidden');document.getElementById('loginModal').classList.add('visible')}})}
+function closeLogin(){document.getElementById('loginModal').classList.remove('visible');document.getElementById('loginModal').classList.add('hidden')}
 
-        const itemsEl = document.getElementById('cartItems');
-        const footerEl = document.getElementById('cartFooter');
-        const emptyEl = document.getElementById('cartEmpty');
+document.getElementById('loginForm').addEventListener('submit',async(e)=>{e.preventDefault();const em=document.getElementById('loginEmail').value.trim(),pw=document.getElementById('loginPass').value,errEl=document.getElementById('loginError');errEl.classList.add('hidden');document.getElementById('loginBtnText').textContent='Entrando...';document.getElementById('loginSpin').classList.remove('hidden');document.getElementById('loginBtn').disabled=true;const{data,error}=await sb.auth.signInWithPassword({email:em,password:pw});document.getElementById('loginBtnText').textContent='Entrar';document.getElementById('loginSpin').classList.add('hidden');document.getElementById('loginBtn').disabled=false;if(error){errEl.textContent=error.message;errEl.classList.remove('hidden');return}closeLogin();document.getElementById('adminBtn').classList.add('logged');document.getElementById('adminEmail').textContent=em;openAdmin()});
 
-        if (cart.length === 0) {
-            itemsEl.innerHTML = '';
-            footerEl.classList.add('hidden');
-            emptyEl.classList.remove('hidden');
-        } else {
-            emptyEl.classList.add('hidden');
-            footerEl.classList.remove('hidden');
-            document.getElementById('cartTotal').textContent = getCartTotal().toFixed(2).replace('.', ',') + '€';
-            itemsEl.innerHTML = cart.map(i => `
-                <div class="flex gap-4 bg-white/5 rounded-xl p-3">
-                    <img src="${i.imagen}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium truncate">${i.nombre}</p>
-                        <p class="text-orange-500 font-semibold text-sm">${i.precio.toFixed(2).replace('.',',')}€</p>
-                        <div class="flex items-center gap-3 mt-2">
-                            <button onclick="changeQty('${i.id}',-1)" class="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 text-sm font-bold">−</button>
-                            <span class="text-sm font-medium w-6 text-center">${i.qty}</span>
-                            <button onclick="changeQty('${i.id}',1)" class="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 text-sm font-bold">+</button>
-                            <button onclick="removeFromCart('${i.id}')" class="ml-auto text-neutral-600 hover:text-red-400 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
+async function adminLogout(){if(sb)await sb.auth.signOut();document.getElementById('adminBtn').classList.remove('logged');document.getElementById('adminEmail').textContent='';closeAdmin();showToast('Sesión cerrada','')}
 
-    function toggleCart() {
-        const drawer = document.getElementById('cartDrawer');
-        const overlay = document.getElementById('cartOverlay');
-        const isOpen = drawer.classList.contains('open');
-        if (isOpen) {
-            drawer.classList.remove('open'); drawer.classList.add('closed');
-            overlay.classList.add('hidden');
-            document.body.style.overflow = '';
-        } else {
-            drawer.classList.remove('closed'); drawer.classList.add('open');
-            overlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-    }
+function openAdmin(){document.getElementById('adminPanel').classList.remove('hidden');document.getElementById('adminPanel').classList.add('visible');document.body.style.overflow='hidden';renderAdminSidebar();switchAdminTab('pedidos')}
+function closeAdmin(){document.getElementById('adminPanel').classList.remove('visible');document.getElementById('adminPanel').classList.add('hidden');document.body.style.overflow=''}
 
-    // ===== CHECKOUT =====
-    function openCheckout() {
-        if (cart.length === 0) return;
-        toggleCart();
-        document.getElementById('ckTotal').textContent = getCartTotal().toFixed(2).replace('.', ',') + '€';
-        document.getElementById('checkoutModal').classList.remove('hidden');
-        document.getElementById('checkoutModal').classList.add('visible');
-        document.body.style.overflow = 'hidden';
-    }
+function renderAdminSidebar(){const tabs=[{id:'pedidos',icon:'📦',label:'Pedidos'},{id:'categorias',icon:'🏷️',label:'Categorías'},{id:'productos',icon:'💡',label:'Productos'},{id:'municipios',icon:'🚚',label:'Municipios'}];document.getElementById('adminSidebar').innerHTML=tabs.map(t=>`<button onclick="switchAdminTab('${t.id}')" class="tab-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium border border-transparent flex items-center gap-2 ${adminTab===t.id?'active':'text-neutral-400 hover:text-white hover:bg-white/5'}">${t.icon} ${t.label}</button>`).join('')+`<div class="mt-auto pt-4 border-t border-white/5"><button onclick="adminLogout()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2">🚪 Cerrar sesión</button></div>`}
 
-    function closeCheckout() {
-        document.getElementById('checkoutModal').classList.remove('visible');
-        document.getElementById('checkoutModal').classList.add('hidden');
-        document.body.style.overflow = '';
-    }
+async function switchAdminTab(tab){adminTab=tab;editingId=null;renderAdminSidebar();const c=document.getElementById('adminContent');c.innerHTML='<div class="text-center py-12"><div class="animate-spin w-8 h-8 text-brand-500 mx-auto mb-3 border-2 border-brand-500 border-t-transparent rounded-full"></div></div>';if(tab==='pedidos')await renderAdminPedidos();else if(tab==='categorias')await renderAdminCats();else if(tab==='productos')await renderAdminProducts();else if(tab==='municipios')await renderAdminMunis()}
 
-    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('ckName').value.trim();
-        const phone = document.getElementById('ckPhone').value.trim();
-        const email = document.getElementById('ckEmail').value.trim();
-        const notes = document.getElementById('ckNotes').value.trim();
-        if (!name || !phone) { showToast('Error', 'Nombre y teléfono son obligatorios'); return; }
+async function renderAdminPedidos(){const c=document.getElementById('adminContent');if(!dbOk){c.innerHTML='<p class="text-neutral-500 text-center py-8">Sin conexión</p>';return}const{data:orders,error}=await sb.from('pedidos').select('*').order('created_at',{ascending:false}).limit(50);if(error){c.innerHTML=`<p class="text-red-400 text-center py-8">${error.message}</p>`;return}if(!orders.length){c.innerHTML='<p class="text-neutral-500 text-center py-8">No hay pedidos</p>';return}c.innerHTML=`<div class="flex items-center justify-between mb-4"><span class="text-sm text-neutral-500">${orders.length} pedidos</span><button onclick="switchAdminTab('pedidos')" class="text-sm text-brand-400 hover:underline">↻ Recargar</button></div><div class="space-y-3">${orders.map(o=>{const items=typeof o.items==='string'?JSON.parse(o.items):o.items;return`<div class="bg-white/5 rounded-xl p-4 border border-white/5"><div class="flex flex-wrap items-center gap-2 mb-2"><span class="text-xs text-neutral-600 font-mono">${o.id.toString().slice(0,8)}</span><span class="font-semibold text-sm">${o.cliente_nombre}</span><span class="text-xs text-neutral-500">${o.cliente_telefono}</span>${o.costo_envio>0?`<span class="text-xs text-neutral-500">🚚 ${parseFloat(o.costo_envio).toFixed(2)}€</span>`:''}</div><div class="flex flex-wrap items-center gap-2 mb-2">${items.map(i=>`<span class="bg-white/5 rounded-lg px-2 py-1 text-xs">${i.nombre} x${i.qty}</span>`).join('')}</div><div class="flex items-center justify-between"><span class="text-xs text-neutral-600">${new Date(o.created_at).toLocaleString('es-ES')}</span><div class="flex items-center gap-2"><select onchange="updateOrderStatus('${o.id}',this.value)" class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs">${['pendiente','confirmado','enviado','entregado','cancelado'].map(s=>`<option value="${s}" ${o.estado===s?'selected':''}>${s}</option>`).join('')}</select><span class="font-bold price-tag">${parseFloat(o.total).toFixed(2).replace('.',',')}€</span></div></div>${o.notas?`<div class="mt-2 text-xs text-neutral-500 bg-white/5 rounded-lg p-2">${o.notas}</div>`:''}</div>`}).join('')}</div>`}
 
-        const btn = document.getElementById('ckSubmitBtn');
-        document.getElementById('ckSubmitText').textContent = 'Enviando...';
-        document.getElementById('ckSpinner').classList.remove('hidden');
-        btn.disabled = true; btn.style.opacity = '0.7';
+async function updateOrderStatus(id,status){if(!dbOk)return;await sb.from('pedidos').update({estado:status}).eq('id',id);showToast('Actualizado','→ '+status)}
 
-        const orderData = {
-            cliente_nombre: name, cliente_telefono: phone, cliente_email: email || null,
-            items: cart.map(i => ({ id: i.id, nombre: i.nombre, precio: i.precio, qty: i.qty })),
-            total: getCartTotal(), notas: notes || null
-        };
+async function renderAdminCats(){const c=document.getElementById('adminContent');if(!dbOk){c.innerHTML='<p class="text-neutral-500 text-center py-8">Sin conexión</p>';return}const{data}=await sb.from('categorias').select('*').order('orden');c.innerHTML=`<div class="flex items-center justify-between mb-6"><h3 class="text-lg font-semibold">Categorías (${data.length})</h3><button onclick="showCatForm()" class="bg-brand-500 text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-brand-600">+ Nueva</button></div><div id="catFormArea" class="hidden mb-6 bg-white/5 rounded-2xl p-6 border border-white/10"></div><div class="space-y-2">${data.map(cat=>`<div class="bg-white/5 rounded-xl p-4 flex items-center gap-4 border border-white/5"><span class="text-2xl">${cat.emoji||'📦'}</span><div class="flex-1"><p class="font-medium text-sm">${cat.nombre}</p><p class="text-xs text-neutral-500">/${cat.slug} · Orden: ${cat.orden}</p></div><div class="flex gap-2"><button onclick="showCatForm('${cat.id}')" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg hover:bg-white/20">✏️</button><button onclick="deleteCat('${cat.id}')" class="text-xs bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20">🗑</button></div></div>`).join('')}</div>`}
 
-        let ok = false;
-        if (dbOk && sb) {
-            const { error } = await sb.from('pedidos').insert(orderData);
-            ok = !error;
-            if (error) console.error('Pedido error:', error);
-        } else { ok = true; } // fallback: simula éxito
+function showCatForm(id=null){editingId=id;const area=document.getElementById('catFormArea');area.classList.remove('hidden');const cat=id?allCats.find(c=>c.id===id):{nombre:'',slug:'',emoji:'📦',descripcion:'',orden:0};area.innerHTML=`<h4 class="font-semibold mb-4">${id?'Editar':'Nueva'} categoría</h4><div class="grid md:grid-cols-2 gap-4"><div><label class="block text-xs text-neutral-400 mb-1">Emoji</label><div class="flex items-center gap-2"><span id="emojiPreview" class="text-2xl w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg">${cat.emoji||'📦'}</span><input type="text" id="fEmoji" value="${cat.emoji||'📦'}" class="form-input flex-1" oninput="document.getElementById('emojiPreview').textContent=this.value"></div><div class="emoji-grid mt-2">${EMOJIS.map(e=>`<div class="emoji-opt ${cat.emoji===e?'selected':''}" onclick="document.getElementById('fEmoji').value='${e}';document.getElementById('emojiPreview').textContent='${e}';document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('selected'));this.classList.add('selected')">${e}</div>`).join('')}</div></div><div><label class="block text-xs text-neutral-400 mb-1">Nombre</label><input type="text" id="fCatName" value="${cat.nombre}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Slug</label><input type="text" id="fCatSlug" value="${cat.slug}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Orden</label><input type="number" id="fCatOrden" value="${cat.orden}" class="form-input"></div></div><div class="mt-4"><label class="block text-xs text-neutral-400 mb-1">Descripción</label><textarea id="fCatDesc" class="form-input" rows="2">${cat.descripcion||''}</textarea></div><div class="flex gap-3 mt-4"><button onclick="saveCat('${id||''}')" class="bg-brand-500 text-white font-medium text-sm px-6 py-2.5 rounded-xl hover:bg-brand-600">💾 Guardar</button><button onclick="document.getElementById('catFormArea').classList.add('hidden')" class="bg-white/5 text-neutral-400 font-medium text-sm px-6 py-2.5 rounded-xl hover:bg-white/10">Cancelar</button></div>`}
 
-        document.getElementById('ckSubmitText').textContent = 'Confirmar Pedido';
-        document.getElementById('ckSpinner').classList.add('hidden');
-        btn.disabled = false; btn.style.opacity = '1';
+async function saveCat(id){const d={nombre:document.getElementById('fCatName').value.trim(),slug:document.getElementById('fCatSlug').value.trim(),emoji:document.getElementById('fEmoji').value.trim()||'📦',descripcion:document.getElementById('fCatDesc').value.trim(),orden:parseInt(document.getElementById('fCatOrden').value)||0};if(!d.nombre||!d.slug){showToast('Error','Nombre y slug obligatorios');return}let ok;if(id){const{error}=await sb.from('categorias').update(d).eq('id',id);ok=!error}else{const{error}=await sb.from('categorias').insert(d);ok=!error}if(ok){showToast('Guardado',d.nombre);await loadData();await renderAdminCats()}else showToast('Error','')}
 
-        if (ok) {
-            cart = []; saveCart();
-            document.getElementById('checkoutForm').reset();
-            closeCheckout();
-            showToast('¡Pedido enviado!', 'Te contactaremos para confirmar.');
-        } else {
-            showToast('Error', 'No se pudo enviar. Inténtalo de nuevo.');
-        }
-    });
+async function deleteCat(id){if(!confirm('¿Eliminar?'))return;await sb.from('categorias').delete().eq('id',id);showToast('Eliminado','');await loadData();await renderAdminCats()}
 
-    // ===== ADMIN =====
-    function openAdmin() {
-        const modal = document.getElementById('adminModal');
-        const content = document.getElementById('adminContent');
-        modal.classList.remove('hidden'); modal.classList.add('visible');
-        document.body.style.overflow = 'hidden';
+async function renderAdminProducts(){const c=document.getElementById('adminContent');if(!dbOk){c.innerHTML='<p class="text-neutral-500 text-center py-8">Sin conexión</p>';return}const{data}=await sb.from('productos').select('*,categorias(nombre,emoji)').order('orden');c.innerHTML=`<div class="flex items-center justify-between mb-6"><h3 class="text-lg font-semibold">Productos (${data.length})</h3><button onclick="showProdForm()" class="bg-brand-500 text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-brand-600">+ Nuevo</button></div><div id="prodFormArea" class="hidden mb-6 bg-white/5 rounded-2xl p-6 border border-white/10"></div><div class="space-y-2">${data.map(p=>`<div class="bg-white/5 rounded-xl p-4 flex items-center gap-4 border border-white/5"><img src="${p.imagen_url}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0"><div class="flex-1 min-w-0"><p class="font-medium text-sm truncate">${p.categorias?.emoji||''} ${p.nombre}</p><p class="text-xs text-neutral-500">${p.precio.toFixed(2)}€ ${p.destacado?'· ⭐':''}</p></div><div class="flex gap-2"><button onclick="showProdForm('${p.id}')" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg hover:bg-white/20">✏️</button><button onclick="toggleFeatured('${p.id}',${!p.destacado})" class="text-xs ${p.destacado?'bg-brand-500/20 text-brand-400':'bg-white/10'} px-3 py-1.5 rounded-lg hover:bg-white/20">⭐</button><button onclick="deleteProd('${p.id}')" class="text-xs bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20">🗑</button></div></div>`).join('')}</div>`}
 
-        content.innerHTML = '<div class="text-center py-8"><svg class="animate-spin w-8 h-8 text-orange-500 mx-auto mb-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><p class="text-neutral-500">Cargando pedidos...</p></div>';
+async function toggleFeatured(id,val){if(!dbOk)return;await sb.from('productos').update({destacado:val}).eq('id',id);showToast(val?'Destacado':'Quitado','');await renderAdminProducts()}
 
-        if (dbOk && sb) {
-            sb.from('pedidos').select('*').order('created_at', { ascending: false }).limit(50).then(({ data, error }) => {
-                if (error) { content.innerHTML = `<p class="text-red-400 text-center py-8">Error al cargar: ${error.message}</p>`; return; }
-                renderAdminOrders(data);
-            });
-        } else {
-            content.innerHTML = '<p class="text-neutral-500 text-center py-8">Conecta Supabase para ver los pedidos.</p>';
-        }
-    }
+function showProdForm(id=null){editingId=id;const area=document.getElementById('prodFormArea');area.classList.remove('hidden');const p=id?allProducts.find(x=>x.id===id):{nombre:'',descripcion:'',precio:'',precio_antiguo:'',imagen_url:'',categoria_id:'',destacado:false,notas:'',stock:50,orden:0};area.innerHTML=`<h4 class="font-semibold mb-4">${id?'Editar':'Nuevo'} producto</h4><div class="grid md:grid-cols-2 gap-4"><div class="md:col-span-2"><label class="block text-xs text-neutral-400 mb-1">Nombre *</label><input type="text" id="fPName" value="${p.nombre}" class="form-input"></div><div class="md:col-span-2"><label class="block text-xs text-neutral-400 mb-1">Descripción</label><textarea id="fPDesc" class="form-input" rows="2">${p.descripcion}</textarea></div><div><label class="block text-xs text-neutral-400 mb-1">Precio *</label><input type="number" step="0.01" id="fPPrice" value="${p.precio}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Precio antiguo</label><input type="number" step="0.01" id="fPOldPrice" value="${p.precio_antiguo||''}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Categoría *</label><select id="fPCat" class="form-input"><option value="">Seleccionar...</option>${allCats.map(c=>`<option value="${c.id}" ${p.categoria_id===c.id?'selected':''}>${c.emoji} ${c.nombre}</option>`).join('')}</select></div><div><label class="block text-xs text-neutral-400 mb-1">Stock</label><input type="number" id="fPStock" value="${p.stock}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Orden</label><input type="number" id="fPOrden" value="${p.orden}" class="form-input"></div><div class="flex items-center gap-2"><input type="checkbox" id="fPFeatured" ${p.destacado?'checked':''} class="w-4 h-4 accent-blue-500"><label for="fPFeatured" class="text-sm">⭐ Destacado</label></div></div><div class="mt-4"><label class="block text-xs text-neutral-400 mb-1">Especificaciones / Notas</label><textarea id="fPNotes" class="form-input" rows="3" placeholder="Separa con · cada especificación">${p.notas||''}</textarea></div><div class="mt-4"><label class="block text-xs text-neutral-400 mb-1">Imagen</label><div class="flex gap-3 items-start"><input type="text" id="fPImage" value="${p.imagen_url}" class="form-input flex-1" placeholder="URL"><div><label class="upload-zone rounded-xl p-3 text-center cursor-pointer block" onclick="document.getElementById('fPFile').click()"><div class="text-2xl mb-1">📁</div><div class="text-xs text-neutral-500">Subir</div></label><input type="file" id="fPFile" accept="image/*" onchange="uploadProdImage(this)"></div></div>${p.imagen_url?`<img src="${p.imagen_url}" class="w-20 h-20 rounded-lg object-cover mt-2" id="fPPreview">`:''}</div><div class="flex gap-3 mt-4"><button onclick="saveProd('${id||''}')" class="bg-brand-500 text-white font-medium text-sm px-6 py-2.5 rounded-xl hover:bg-brand-600">💾 Guardar</button><button onclick="document.getElementById('prodFormArea').classList.add('hidden')" class="bg-white/5 text-neutral-400 font-medium text-sm px-6 py-2.5 rounded-xl hover:bg-white/10">Cancelar</button></div>`}
 
-    function renderAdminOrders(orders) {
-        const content = document.getElementById('adminContent');
-        if (!orders.length) { content.innerHTML = '<p class="text-neutral-500 text-center py-8">No hay pedidos aún.</p>'; return; }
+async function uploadProdImage(input){if(!input.files[0]||!sb)return;const file=input.files[0];const name=`${Date.now()}_${file.name}`;document.getElementById('fPImage').value='Subiendo...';const{data,error}=await sb.storage.from('productos').upload(name,file);if(error){document.getElementById('fPImage').value='Error';showToast('Error',error.message);return}const{data:{publicUrl}}=sb.storage.from('productos').getPublicUrl(name);document.getElementById('fPImage').value=publicUrl;const prev=document.getElementById('fPPreview');if(prev)prev.src=publicUrl;else{const img=document.createElement('img');img.src=publicUrl;img.id='fPPreview';img.className='w-20 h-20 rounded-lg object-cover mt-2';input.closest('div').parentElement.appendChild(img)}showToast('Imagen subida','')}
 
-        const statusColors = { pendiente:'bg-yellow-500/20 text-yellow-400', confirmado:'bg-blue-500/20 text-blue-400', enviado:'bg-purple-500/20 text-purple-400', entregado:'bg-green-500/20 text-green-400', cancelado:'bg-red-500/20 text-red-400' };
+async function saveProd(id){const d={nombre:document.getElementById('fPName').value.trim(),descripcion:document.getElementById('fPDesc').value.trim(),precio:parseFloat(document.getElementById('fPPrice').value),precio_antiguo:document.getElementById('fPOldPrice').value?parseFloat(document.getElementById('fPOldPrice').value):null,imagen_url:document.getElementById('fPImage').value.trim(),categoria_id:document.getElementById('fPCat').value||null,destacado:document.getElementById('fPFeatured').checked,notas:document.getElementById('fPNotes').value.trim()||null,stock:parseInt(document.getElementById('fPStock').value)||0,orden:parseInt(document.getElementById('fPOrden').value)||0};if(!d.nombre||!d.precio){showToast('Error','Nombre y precio obligatorios');return}let ok;if(id){const{error}=await sb.from('productos').update(d).eq('id',id);ok=!error}else{const{error}=await sb.from('productos').insert(d);ok=!error}if(ok){showToast('Guardado',d.nombre);await loadData();await renderAdminProducts()}else showToast('Error','')}
 
-        content.innerHTML = `
-            <div class="mb-4 flex items-center justify-between">
-                <span class="text-sm text-neutral-500">${orders.length} pedidos</span>
-                <button onclick="openAdmin()" class="text-sm text-orange-500 hover:underline">↻ Recargar</button>
-            </div>
-            <div class="space-y-3">${orders.map(o => `
-                <div class="bg-white/5 rounded-xl p-4 border border-white/5">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs text-neutral-600 font-mono">${o.id.toString().slice(0,8)}</span>
-                            <span class="font-semibold text-sm">${o.cliente_nombre}</span>
-                            <span class="text-xs text-neutral-500">${o.cliente_telefono}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs px-2.5 py-1 rounded-full font-medium ${statusColors[o.estado]||''}">${o.estado}</span>
-                            <select onchange="updateOrderStatus('${o.id}',this.value)" class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-neutral-300">
-                                ${['pendiente','confirmado','enviado','entregado','cancelado'].map(s => `<option value="${s}" ${o.estado===s?'selected':''}>${s}</option>`).join('')}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="text-xs text-neutral-500 mb-2">${new Date(o.created_at).toLocaleString('es-ES')}</div>
-                    <div class="flex flex-wrap gap-2">${(typeof o.items === 'string' ? JSON.parse(o.items) : o.items).map(i => `<span class="bg-white/5 rounded-lg px-2 py-1 text-xs">${i.nombre} x${i.qty}</span>`).join('')}</div>
-                    <div class="text-right mt-2"><span class="font-bold price-tag text-lg">${parseFloat(o.total).toFixed(2).replace('.',',')}€</span></div>
-                    ${o.notas ? `<div class="mt-2 text-xs text-neutral-500 bg-white/5 rounded-lg p-2">${o.notas}</div>` : ''}
-                </div>
-            `).join('')}</div>`;
-    }
+async function deleteProd(id){if(!confirm('¿Eliminar?'))return;await sb.from('productos').delete().eq('id',id);showToast('Eliminado','');await loadData();await renderAdminProducts()}
 
-    async function updateOrderStatus(id, status) {
-        if (!dbOk || !sb) return;
-        await sb.from('pedidos').update({ estado: status }).eq('id', id);
-        showToast('Actualizado', `Pedido → ${status}`);
-    }
+async function renderAdminMunis(){const c=document.getElementById('adminContent');if(!dbOk){c.innerHTML='<p class="text-neutral-500 text-center py-8">Sin conexión</p>';return}const{data}=await sb.from('municipios').select('*').order('orden');c.innerHTML=`<div class="flex items-center justify-between mb-6"><h3 class="text-lg font-semibold">Municipios (${data.length})</h3><button onclick="showMuniForm()" class="bg-brand-500 text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-brand-600">+ Nuevo</button></div><div id="muniFormArea" class="hidden mb-6 bg-white/5 rounded-2xl p-6 border border-white/10"></div><div class="space-y-2">${data.map(m=>`<div class="bg-white/5 rounded-xl p-4 flex items-center gap-4 border border-white/5"><span class="text-xl">📍</span><div class="flex-1"><p class="font-medium text-sm">${m.nombre}</p><p class="text-xs text-neutral-500">${m.provincia} · 🚚 ${parseFloat(m.costo_envio).toFixed(2)}€ · ⏱ ${m.tiempo_entrega}</p></div><div class="flex gap-2"><button onclick="showMuniForm('${m.id}')" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg hover:bg-white/20">✏️</button><button onclick="deleteMuni('${m.id}')" class="text-xs bg-red-500/10 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/20">🗑</button></div></div>`).join('')}</div>`}
 
-    function closeAdmin() {
-        document.getElementById('adminModal').classList.remove('visible');
-        document.getElementById('adminModal').classList.add('hidden');
-        document.body.style.overflow = '';
-    }
+function showMuniForm(id=null){editingId=id;const area=document.getElementById('muniFormArea');area.classList.remove('hidden');const m=id?allMunis.find(x=>x.id===id):{nombre:'',provincia:'',costo_envio:0,tiempo_entrega:'24-48h',orden:0};area.innerHTML=`<h4 class="font-semibold mb-4">${id?'Editar':'Nuevo'} municipio</h4><div class="grid md:grid-cols-2 gap-4"><div><label class="block text-xs text-neutral-400 mb-1">Nombre *</label><input type="text" id="fMName" value="${m.nombre}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Provincia *</label><input type="text" id="fMProv" value="${m.provincia}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Costo envío (€) *</label><input type="number" step="0.01" id="fMCost" value="${m.costo_envio}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Tiempo entrega</label><input type="text" id="fMTime" value="${m.tiempo_entrega}" class="form-input"></div><div><label class="block text-xs text-neutral-400 mb-1">Orden</label><input type="number" id="fMOrden" value="${m.orden}" class="form-input"></div></div><div class="flex gap-3 mt-4"><button onclick="saveMuni('${id||''}')" class="bg-brand-500 text-white font-medium text-sm px-6 py-2.5 rounded-xl hover:bg-brand-600">💾 Guardar</button><button onclick="document.getElementById('muniFormArea').classList.add('hidden')" class="bg-white/5 text-neutral-400 font-medium text-sm px-6 py-2.5 rounded-xl hover:bg-white/10">Cancelar</button></div>`}
 
-    // ===== TOAST =====
-    function showToast(title, msg) {
-        document.getElementById('toastTitle').textContent = title;
-        document.getElementById('toastMsg').textContent = msg;
-        const t = document.getElementById('toast');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
+async function saveMuni(id){const d={nombre:document.getElementById('fMName').value.trim(),provincia:document.getElementById('fMProv').value.trim(),costo_envio:parseFloat(document.getElementById('fMCost').value)||0,tiempo_entrega:document.getElementById('fMTime').value.trim()||'24-48h',orden:parseInt(document.getElementById('fMOrden').value)||0};if(!d.nombre||!d.provincia){showToast('Error','Nombre y provincia obligatorios');return}let ok;if(id){const{error}=await sb.from('municipios').update(d).eq('id',id);ok=!error}else{const{error}=await sb.from('municipios').insert(d);ok=!error}if(ok){showToast('Guardado',d.nombre);allMunis=await refreshMunis();populateMuniSelect();await renderAdminMunis()}else showToast('Error','')}
 
-    // ===== MOBILE MENU =====
-    document.getElementById('menuToggle').addEventListener('click', () => {
-        document.getElementById('mobileMenu').style.transform = 'translateX(0)';
-        document.body.style.overflow = 'hidden';
-    });
-    document.getElementById('menuClose').addEventListener('click', () => {
-        document.getElementById('mobileMenu').style.transform = 'translateX(100%)';
-        document.body.style.overflow = '';
-    });
+async function deleteMuni(id){if(!confirm('¿Eliminar?'))return;await sb.from('municipios').delete().eq('id',id);showToast('Eliminado','');allMunis=await refreshMunis();populateMuniSelect();await renderAdminMunis()}
+async function refreshMunis(){const{data}=await sb.from('municipios').select('*').eq('activo',true).order('orden');return data||[]}
 
-    // ===== SCROLL REVEAL =====
-    const ro = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); }), { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+function showToast(t,m){document.getElementById('toastTitle').textContent=t;document.getElementById('toastMsg').textContent=m;const el=document.getElementById('toast');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
 
-    // ===== SMOOTH SCROLL =====
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', function(e) {
-            e.preventDefault();
-            const t = document.querySelector(this.getAttribute('href'));
-            if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 100, behavior:'smooth' });
-        });
-    });
+document.getElementById('menuToggle').addEventListener('click',()=>{document.getElementById('mobileMenu').style.transform='translateX(0)';document.body.style.overflow='hidden'});
+document.getElementById('menuClose').addEventListener('click',()=>{document.getElementById('mobileMenu').style.transform='translateX(100%)';document.body.style.overflow=''});
 
-    // ===== GO =====
-    init();
-    </script>
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('active')}),{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t)window.scrollTo({top:t.getBoundingClientRect().top+window.pageYOffset-100,behavior:'smooth'})})});
+
+init();
+</script>
 </body>
-        </html>
+    </html>
